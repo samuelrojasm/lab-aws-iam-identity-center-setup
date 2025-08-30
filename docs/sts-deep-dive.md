@@ -9,7 +9,7 @@
 - [Anatomía de las credenciales temporales](#anatomia)
 - [Duración y expiración de tokens](#duracion)
 - [Refresh de credenciales](#refresh)
-- [Seguridad de tokens STS](#seguridad)
+- [Seguridad de tokens STS](#sec)
 - [Troubleshooting común con STS](#troubleshooting)
 - [Comparación: STS vs Access Keys permanentes](#comparar)
 - [Monitoreo y auditoría](#monitoreo)
@@ -170,7 +170,7 @@
     └── 789ghi012jkl.json         # Credenciales STS temporales
     ```
 
-## ⚙️ Seguridad de tokens STS <a name="seguridad"></a> 
+## ⚙️ Seguridad de tokens STS <a name="sec"></a> 
 - Ventajas de credenciales temporales:
     - **Auto-expiración**: Riesgo limitado si se comprometen
     - **Permisos específicos**: Solo los del role asumido
