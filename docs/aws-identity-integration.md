@@ -78,6 +78,43 @@
     └─────────────────────────────────────────────────────────────────┘
     ```
 
+### Conceptos Clave
+1. AWS STS (Security Token Service)
+    - **Definición**: "Servicio web que permite solicitar credenciales temporales"
+    - **Propósito**: "Proporcionar acceso temporal y limitado a recursos AWS"
+    - **Beneficios**:
+        - "Credenciales que expiran automáticamente",
+        - "No requiere crear usuarios IAM permanentes",
+        - "Integración con proveedores de identidad externos",
+        - "Control granular de permisos"
+    - **Tipos de tokens**
+        - **AccessKeyId**: "Identificador de clave de acceso temporal",
+        - **SecretAccessKey**: "Clave secreta temporal",
+        - **SessionToken**: "Token de sesión requerido para uso temporal"
+2. SAML 2.0 (Security Assertion Markup Language)
+    - Estructura básica de una SAML Assertion:
+        ```saml
+        <!-- Estructura básica de una SAML Assertion -->
+        <saml:Assertion>
+            <saml:Subject>
+                <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent">
+                    usuario@empresa.com
+                </saml:NameID>
+            </saml:Subject>
+            
+            <saml:AttributeStatement>
+                <saml:Attribute Name="https://aws.amazon.com/SAML/Attributes/Role">
+                    <saml:AttributeValue>
+                        arn:aws:iam::123456789012:role/SAMLRole,
+                        arn:aws:iam::123456789012:saml-provider/ExampleProvider
+                    </saml:AttributeValue>
+                </saml:Attribute>
+            </saml:AttributeStatement>
+        </saml:Assertion>
+        ```
+
+
+
 ---
 
 
