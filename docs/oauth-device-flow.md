@@ -6,13 +6,16 @@
 - [¿Qué es OAuth 2.0 Device Authorization Flow](#ques-es)
 - [El problema de usar Authorization Code Flow en CLI](#problema)
 - [¿Cómo Device Flow resueve el problema?](#solucion)
+- [¿Cómo funciona en la práctica?: Escenario típico con AWS CLI](#practica)
+- [¿Por qué CLI es el caso de uso perfecto? ](#caso)
 - [Ejemplos de dispositivos con capacidades de entrada limitadas](#limitadas)
 - [Device Authorization Flow sin navegador web en el dispositivo](#navegador)
-- [¿Por qué CLI es el caso de uso perfecto? ](#caso)
+
 
 - [](#)
 - [](#)
-- [](#)
+
+## ⚙️ ¿Cómo funciona en la práctica?: Escenario típico con AWS CLI<a name="practica"></a> 
 
 ---
 
@@ -89,28 +92,28 @@
 > - No abre navegador → Funciona en cualquier entorno
 > - Usuario decide qué dispositivo usar → Máxima flexibilidad
 
-- ¿Cómo funciona en la práctica?: Escenario típico con AWS CLI
-    - El usuario autoriza en un dispositivo separado
-        ```bash
-        # En nuestra laptop/servidor (dispositivo limitado)
-        $ aws sso login --profile my-profile
-        # CLI muestra:
-        Attempting to automatically open the SSO authorization page...
-        If the browser does not open, go to: https://device.sso.amazonaws.com/
-        Then enter the code: BCFG-HJKL
-        Waiting for authorization to complete...
-        ```
-    - Lo que hacemos como usuarios
-        1.- En nuestro smartphone (dispositivo con capacidades completas):
-            - Abrimos el link: https://device.sso.amazonaws.com/
-            - Vemos una pantalla que dice "Enter device code"
-            - Escribimos: BCFG-HJKL
-            - Nos loggeamos con  usuario/password normal
-            - Confirmar: "¿Autorizar AWS CLI en tu laptop?"
-        2.- De vuelta en nuestra laptop:
-            - CLI detecta que autorizaste
-            - Descarga los tokens automáticamente
-            - Ya podemos usar comandos AWS
+## ⚙️ ¿Cómo funciona en la práctica?: Escenario típico con AWS CLI<a name="practica"></a> 
+- El usuario autoriza en un dispositivo separado
+    ```bash
+    # En nuestra laptop/servidor (dispositivo limitado)
+    $ aws sso login --profile my-profile
+    # CLI muestra:
+    Attempting to automatically open the SSO authorization page...
+    If the browser does not open, go to: https://device.sso.amazonaws.com/
+    Then enter the code: BCFG-HJKL
+    Waiting for authorization to complete...
+    ```
+- Lo que hacemos como usuarios
+1. En nuestro smartphone (dispositivo con capacidades completas):
+    - Abrimos el link: https://device.sso.amazonaws.com/
+    - Vemos una pantalla que dice "Enter device code"
+    - Escribimos: BCFG-HJKL
+    - Nos loggeamos con  usuario/password normal
+    - Confirmar: "¿Autorizar AWS CLI en tu laptop?"
+2. De vuelta en nuestra laptop:
+    - CLI detecta que autorizaste
+    - Descarga los tokens automáticamente
+    - Ya podemos usar comandos AWS
 - Ventajas de esta separación:
     - Comodidad:
         - Usas tu teléfono (teclado táctil, autocompletado, biometrics)
@@ -123,19 +126,19 @@
         - Útil en situaciones donde el dispositivo primario no tiene internet
 
 > [!NOTE] 
-> **Resumen** 
 > - OAuth 2.0 = Protocolo flexible y bueno
 > - Device Flow = Una herramienta específica dentro de OAuth 2.0
 > - Authorization Code Flow = Otra herramienta, pero para casos diferentes
 
 ## ⚙️ ¿Por qué CLI es el caso de uso perfecto? <a name="caso"></a> 
-Especialmente útil para aplicaciones de línea de comandos
+### Especialmente útil para aplicaciones de línea de comandos
 - Antes del Device Flow
-     1.- Access Keys hardcodeados:
+    1.- Access Keys hardcodeados:
         ```bash
         export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
         export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
         ```
+        > [!CAUTION]
         > **Problemas:** Keys permanentes, riesgo si se comprometen, difíciles de rotar
     2.- Profiles con credenciales:
         ```bash
@@ -143,6 +146,7 @@ Especialmente útil para aplicaciones de línea de comandos
         aws_access_key_id = AKIAIOSFODNN7EXAMPLE  
         aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
         ```
+        > [!CAUTION]
         > **Problemas:** Credenciales en texto plano en archivos locales
 - Con Device Flow (método moderno):
     ```bash
@@ -159,6 +163,12 @@ Especialmente útil para aplicaciones de línea de comandos
 |IAM Roles|✅ Temporales|❌ Complejo setup|❌ Configuración compleja|
 |Device Flow|✅ Temporales|✅ Simple UX|✅ Automático|
 
+- Otros ejemplos de CLI que usan Device Flow:
+    - GitHub CLI: `gh auth login`
+    - Azure CLI: `az login --use-device-code`
+    - Google Cloud CLI: `gcloud auth login --no-launch-browser`
+    - Docker CLI: Para acceder a registries privados
+
 ## ⚙️ Ejemplos de dispositivos con capacidades de entrada limitadas <a name="limitadas"></a> 
 ### Smart TVs:
 - Solo tienen control remoto (botones arriba/abajo/izquierda/derecha)
@@ -172,28 +182,31 @@ Especialmente útil para aplicaciones de línea de comandos
 - Controladores de juego no son ideales para escribir texto
 - Navegar por teclados en pantalla es lento
 
-## ⚙️ No requiere un navegador web en el dispositivo <a name="nevegador"></a> 
-### El problema tradicional:
+## ⚙️ Device Authorization Flow sin navegador web en el dispositivo <a name="nevegador"></a> 
+### El problema tradicional usando Authorization Code
 - En flujos OAuth normales (como Authorization Code), el proceso es:
     - Aplicación redirige al usuario a una página de login
     - Usuario ingresa credenciales en el navegador
     - Proveedor redirige de vuelta a la aplicación
-
-## ⚙️ Device Authorization Flow sin navegador web en el dispositivo <a name="navegador"></a> 
-
-Device Authorization Flow 
-
-
-
-
-
-
-> [!NOTE]  
-> `xxxx` es útil sobre todo ...
+### ¿Por qué esto no funciona en CLI?
+- AWS CLI ejemplo:
+    ```bash
+    $ aws s3 ls
+    # ¿Cómo debería abrirse un navegador aquí?
+    # ¿En qué URL redireccionar después del login?
+    # ¿Cómo capturar la respuesta en la terminal?
+    ```
+### Problemas específicos:
+- Terminal no puede "abrir" un navegador de forma confiable
+- No hay una URL de callback donde redireccionar
+- Diferentes sistemas operativos manejan browsers diferente
+- En servidores remotos (SSH) puede no haber interfaz gráfica
 
 ---
 
-## ⚙️ ¿Cómo funciona internamente?
+
+
+
 
 
 ## ⚙️ Instalar
