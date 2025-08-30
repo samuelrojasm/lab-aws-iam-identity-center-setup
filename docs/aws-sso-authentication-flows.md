@@ -22,8 +22,8 @@
 - [AWS STS: El Traductor de Tokens](#sts)
 
 
-- [Integración: SAML + OAuth + STS](#integracion)
-- [Configuración Práctica para un laboratoio de pruebas](#lab)
+- [](#integracion)
+- [](#lab)
 
 ## ⚙️ El problema que resolvemos <a name="intro"></a> 
 - Imagina una organización moderna donde los empleados necesitan acceder a AWS desde múltiples contextos:
@@ -35,7 +35,7 @@
 - **La solución tradicional fallida**: Crear usuarios IAM individuales sería un nightmare de seguridad y gestión.
 - **La solución elegante:** Una arquitectura que combina SAML (para web) + OAuth Device Flow (para CLI/aplicaciones) + AWS STS (como orquestador central)
 
-## ⚙️ Los Actores Principales  <a name="actores"></a> 
+## ⚙️ Los actores principales  <a name="actores"></a> 
 ### Identity Provider (IdP)
 - **Qué es**: El sistema que "conoce" a los usuarios (Active Directory, Okta, Azure AD)
 - **Responsabilidad**: Autenticar usuarios y proporcionar información sobre ellos
@@ -71,22 +71,22 @@
         ⬇
     ✅ Usuario accede a AWS Console con permisos específicos
 ### Información Clave en una Assertion SAML
-    - Una SAML Assertion es como un documento de identidad que contiene:
-        - **Subject (Sujeto)**: "Esta identidad pertenece a juan.perez@empresa.com"
-        - **Attributes (Atributos)**:
-            - Departamento: "Marketing"
-            - Roles: "Marketing-ReadOnly", "S3-FullAccess"
-            - Email: "juan.perez@empresa.com"
-        - **Conditions (Condiciones)**: "Válido solo por 1 hora, solo para AWS"
-        - **Digital Signature**: "Firmado por IdP confiable"
-### ¿Por Qué SAML Funciona Tan Bien para Web?
-    - **Redirects naturales**: Los navegadores manejan redirects automáticamente
-    - **Cookies y sesiones**: Mantiene el estado de autenticación
-    - **POST forms**: Puede enviar datos grandes (assertions) fácilmente
-    - **Universal**: Funciona en cualquier navegador sin instalaciones
+- Una SAML Assertion es como un documento de identidad que contiene:
+    - **Subject (Sujeto)**: "Esta identidad pertenece a juan.perez@empresa.com"
+    - **Attributes (Atributos)**:
+        - Departamento: "Marketing"
+        - Roles: "Marketing-ReadOnly", "S3-FullAccess"
+        - Email: "juan.perez@empresa.com"
+    - **Conditions (Condiciones)**: "Válido solo por 1 hora, solo para AWS"
+    - **Digital Signature**: "Firmado por IdP confiable"
+### ¿Por Qué SAML Funciona tan bien para Web?
+- **Redirects naturales**: Los navegadores manejan redirects automáticamente
+- **Cookies y sesiones**: Mantiene el estado de autenticación
+- **POST forms**: Puede enviar datos grandes (assertions) fácilmente
+- **Universal**: Funciona en cualquier navegador sin instalaciones
 
 ## ⚙️ OAuth Device Flow: Autenticación sin Navegador <a name="base"></a> 
-### El Problema del CLI
+### El problema del CLI
 - Cuando Carlos ejecuta `aws sso login --profile dev-account`, su terminal no tiene un navegador integrado. No puede mostrar una página de login, no puede manejar redirects, no puede procesar JavaScript.
 ### La Solución Ingeniosa: Device Flow
 - El Device Flow es como "autenticación por proxy":
@@ -95,7 +95,7 @@
     - **El usuario** abre su **navegador** normal y completa la autenticación
     - Mientras tanto, el CLI está esperando pacientemente preguntando "¿ya terminó?"
     - Una vez completado, AWS le da al CLI los tokens necesarios
-### El Flujo Device Authorization Explicado
+### El flujo Device Authorization explicado
     💻 CLI ejecuta: aws sso login --profile dev-account
         ⬇
     🌐 AWS SSO responde: "Ve a https://device.sso.aws.com, código: WXYZ-1234"
@@ -120,5 +120,5 @@
         - `email`: "juan.perez@empresa.com"
     - Refresh Token: "Usa esto para obtener nuevos tokens sin re-autenticar"
 
-## ⚙️ AWS STS: El Traductor de Tokens <a name="sts"></a>
+## ⚙️ AWS STS: El traductor de Tokens <a name="sts"></a>
 - ¿Qué Hace STS Realmente?
