@@ -146,7 +146,7 @@
 
 > [!CAUTION]
 > **Problema: Access Keys hardcodeados**<br>
-> - Keys permanentes, riesgo si se comprometen, difíciles de rotar
+> - Keys permanentes, riesgo si se comprometen, difíciles de rotar<br>
 > **Problema: Profiles con credenciales**<br>
 > - Credenciales en texto plano en archivos locales
 
@@ -209,72 +209,6 @@
 - En servidores remotos (SSH) puede no haber interfaz gráfica
 
 ---
-
-
-
-
-
-
-## ⚙️ Instalar
-1. Instalar en macOS:
-    ```bash
-    # Instalar act (en MacOS con Homebrew)
-    brew install act
-    act --version
-    ```
-> [!NOTE]  
-> - `xxx` usa ....
-
-## ⚙️ Comandos
--  Iniciar Docker Desktop en macOS:
-    ```bash
-    open -a Docker
-    ```
-> [!NOTE]  
-> **xxxxxxx:**<br>
-> ✓ xxxxxx<br>
-> ✓ xxxxxxxx<br> 
-> ✗ NO ejecuta nada realmente  
-
----
-
-## ⚙️ Ejecución por primera vez
-- Cuando se ejecuta por primera vez ....
-    <p align="center">
-        <img src="../../imagenes/act-select-image.png" alt="act-select-image" width="90%">
-    </p>
-
-
-## ⚙️ Elección de ...
-- xxxxxx:
-    ```bash
-    act -P ubuntu-latest=nektos/act-environments-ubuntu:22.04
-    ```
----
-
-
----
-
-## ⚙️ Ejemplo
-- Tenemos ....:
-    ```yaml
-    name: CI
-    on: [push]
-    jobs:
-        build:
-            runs-on: ubuntu-latest
-            steps:
-                - uses: actions/checkout@v4
-                - run: echo "Hola desde GitHub Actions en act"
-    ```
-- Salida al ejecuarlo
-    > [CI/build] 🚀  Start image=nektos/act-environments-ubuntu:22.04<br>
-    > [CI/build]   ✅  Success - actions/checkout@v4<br>
-    > [CI/build]   ✅  Run echo "Hola desde GitHub Actions en act"<br>
-    > Hola desde GitHub Actions en act
-
----
-
 
 ## 🔗 Referencias
 - []()
