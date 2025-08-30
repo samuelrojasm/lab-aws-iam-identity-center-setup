@@ -37,8 +37,8 @@
 - Diagrama de relación:
     ```mermaid
     flowchart TD
-    PS1[Permission Set DeveloperAccess] --> Role1[IAM Role AWSReservedSSO_DeveloperAccess_abc123]
-    PS2[Permission Set ReadOnlyAccess] --> Role2[IAM Role AWSReservedSSO_ReadOnlyAccess_def456]
+    PS1[Permission Set: DeveloperAccess] --> Role1[IAM Role: AWSReservedSSO_DeveloperAccess_abc123]
+    PS2[Permission Set: ReadOnlyAccess] --> Role2[IAM Role: AWSReservedSSO_ReadOnlyAccess_def456]
     
     Role1 --> Acc1[Account 111111111111]
     Role1 --> Acc2[Account 222222222222]
