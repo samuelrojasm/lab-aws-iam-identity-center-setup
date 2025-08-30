@@ -303,11 +303,11 @@
 
 ## ⚙️ Interacción AWS STS y Device Authorization (OAuth) <a name="interaccion"></a> 
 1. Device Authorization Flow (OAuth 2.0)
-- **Responsabilidad**: Autenticación y autorización inicial del usuario
-- **Resultado**: Identity Center confirma "Sí, este usuario puede acceder"
+    - **Responsabilidad**: Autenticación y autorización inicial del usuario
+    - **Resultado**: Identity Center confirma "Sí, este usuario puede acceder"
 2. AWS STS (Security Token Service)
-- **Responsabilidad**: Convertir esa autorización en credenciales AWS utilizables
-- **Resultado**: AWS STS genera credenciales temporales para usar APIs de AWS
+    - **Responsabilidad**: Convertir esa autorización en credenciales AWS utilizables
+    - **Resultado**: AWS STS genera credenciales temporales para usar APIs de AWS
 
 ### Interacción práctica:
 - Fase 1: Device Authorization (OAuth)
@@ -344,9 +344,9 @@
 > [!NOTE]
 > "Device Authorization autentica al usuario, luego Identity Center usa AWS STS para generar credenciales AWS"
 
-> Analogía:
-> Device Flow = Mostrar tu ID para entrar al edificio
-> STS = Recibir la tarjeta de acceso temporal para usar las puertas específicas
+> **Analogía**:
+> - Device Flow = Mostrar tu ID para entrar al edificio
+> - STS = Recibir la tarjeta de acceso temporal para usar las puertas específicas
 
 ## ⚙️ Comandos útiles de referencia rápida <a name="comandos"></a> 
 - Lista de comandos:
