@@ -6,14 +6,32 @@
 [![HCL](https://img.shields.io/badge/Language-HCL-blueviolet)](#)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
-> Implementación básica para 
+> 🚀 Laboratorio completo para configuración inicial de **AWS IAM Identity Center** desde cero. Incluye Terraform + pasos manuales, cheatsheets de referencia rápida y documentación técnica de conceptos fundamentales.
 
 ## 🎯 Objetivos del MPV
-
+### Este laboratorio te permitirá:
+- Configurar AWS IAM Identity Center desde cero en una nueva organización de AWS.
+- Dominar tanto la automatización con Terraform como los pasos manuales necesarios.
+- Entender los conceptos técnicos fundamentales como OAuth 2.0 Device Flow y STS (Security Token Service).
+- Aplicar mejores prácticas de seguridad en la configuración de acceso centralizado
 
 ---
 
 ## ⚙ Tecnolgías usadas
+### Servicios AWS
+- AWS IAM Identity Center - Servicio principal de SSO y gestión de acceso centralizado
+- AWS Organizations - Gestión de múltiples cuentas AWS
+- AWS STS (Security Token Service) - Tokens de acceso temporal
+- AWS IAM - Gestión de permisos y políticas
+### Herramientas
+- Terraform - Infrastructure as Code para automatización de recursos
+- AWS CLI - Interfaz de línea de comandos para gestión y validación
+### Protocolos y Estándares
+- OAuth 2.0 Device Authorization Flow - Flujo de autenticación
+### Versiones recomendadas:
+- Terraform: >= 1.13.1
+- AWS CLI: >= 2.28.21
+- AWS Provider: ~> 6.0
 
 ---
 
