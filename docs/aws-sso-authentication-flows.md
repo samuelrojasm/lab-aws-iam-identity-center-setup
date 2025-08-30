@@ -19,11 +19,12 @@
 - [El problema que resolvemos](#intro)
 - [Los Actores Principales](#actores)
 - [SAML: La Base de la Federación Web](#base)
+- [OAuth Device Flow: Autenticación sin navegador](#oauth)
 - [AWS STS: El Traductor de Tokens](#sts)
 - [La Danza Completa: `aws sso login --profile`](#danza)
 - [¿Por qué esta arquitectura funciona?](#funciona)
 - [Diferencias clave entre los flows](#flows)
-- [## ⚙️ Consideraciones importantes](#importantes)
+- [Consideraciones importantes](#importantes)
 
 ## ⚙️ El problema que resolvemos <a name="intro"></a> 
 - Imagina una organización moderna donde los empleados necesitan acceder a AWS desde múltiples contextos:
@@ -85,7 +86,7 @@
 - **POST forms**: Puede enviar datos grandes (assertions) fácilmente
 - **Universal**: Funciona en cualquier navegador sin instalaciones
 
-## ⚙️ OAuth Device Flow: Autenticación sin Navegador <a name="base"></a> 
+## ⚙️ OAuth Device Flow: Autenticación sin navegador <a name="oauth"></a> 
 ### El problema del CLI
 - Cuando Carlos ejecuta `aws sso login --profile dev-account`, su terminal no tiene un navegador integrado. No puede mostrar una página de login, no puede manejar redirects, no puede procesar JavaScript.
 ### La Solución Ingeniosa: Device Flow
@@ -209,7 +210,6 @@
     - **Validación múltiple**: Cada paso valida la legitimidad del request
     - **Audit trail**: Cada paso genera logs para auditoría
     - **Flexibility**: Mismo IdP puede servir web, móvil, CLI, APIs
-
 
 ## ⚙️ ¿Por qué esta arquitectura funciona <a name="funciona"></a>
 ### Ventajas del modelo Híbrido
