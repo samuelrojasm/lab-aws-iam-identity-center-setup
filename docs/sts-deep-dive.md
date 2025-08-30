@@ -1,4 +1,4 @@
-# 🧪 Guía de STS (Security Token Service)
+# 🧪 Guía de AWS STS (Security Token Service)
 
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
@@ -32,6 +32,7 @@
 ## ⚙️ ¿Cómo se relaciona STS con Identity Center? <a name="relacion"></a> 
 - **Identity Center actúa como un intermediario** que utiliza AWS STS por detrás para generar las credenciales que tú usas para acceder a recursos AWS.
 ### Arquitectura simplificada:
+- Diagrama:
     ```mermaid
     flowchart TD
     User[Usuario] --> IC[Identity Center]
