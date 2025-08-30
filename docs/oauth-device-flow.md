@@ -377,7 +377,7 @@ Interacción usuario|Sí (en otro dispositivo)|Sí|No|
 > - No abre navegador → Funciona en cualquier entorno
 > - Usuario decide qué dispositivo usar → Máxima flexibilidad
 
-## ⚙️ ¿Cómo funciona en la práctica?: Escenario típico con AWS CLI<a name="practica"></a> 
+## ⚙️ ¿Cómo funciona en la práctica?: Escenario típico con AWS CLI<a name="practica"></a>
 ### El usuario autoriza en un dispositivo separado
 - Dispositivo de incio de sesión (pueder estar limitado)
     ```bash
@@ -409,7 +409,7 @@ Interacción usuario|Sí (en otro dispositivo)|Sí|No|
     - Puedes usar 2FA, biometrics, etc. en tu teléfono
 - Flexibilidad:
     - Puedes autorizar desde cualquier dispositivo con navegador
-    - Útil en situaciones donde el dispositivo primario no tiene internet
+    - Útil cuando el dispositivo no tiene interfaz gráfica o navegador disponible
 
 > [!NOTE] 
 > - OAuth 2.0 = Protocolo flexible y bueno
