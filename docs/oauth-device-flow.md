@@ -129,7 +129,7 @@
 > - Device Flow = Una herramienta específica dentro de OAuth 2.0
 > - Authorization Code Flow = Otra herramienta, pero para casos diferentes
 
-## ⚙️ ¿Por qué CLI es el caso de uso perfecto? <a name="caso"></a> 
+## ⚙️ ¿Por qué CLI es el caso de uso perfecto? <a name="caso"></a>
 ### Especialmente útil para aplicaciones de línea de comandos
 - Antes del Device Flow
     - Access Keys hardcodeados:
@@ -137,8 +137,10 @@
         export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
         export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
         ```
+        
 > [!CAUTION]
-> **Problemas:** Keys permanentes, riesgo si se comprometen, difíciles de rotar
+> **Problemas:** 
+> Keys permanentes, riesgo si se comprometen, difíciles de rotar
 
     - Profiles con credenciales:
         ```bash
@@ -146,8 +148,11 @@
         aws_access_key_id = AKIAIOSFODNN7EXAMPLE  
         aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
         ```
+
 > [!CAUTION]
-> **Problemas:** Credenciales en texto plano en archivos locales
+> **Problemas:** 
+> Credenciales en texto plano en archivos locales
+
 - Con Device Flow (método moderno):
     ```bash
     aws sso login --profile my-sso-profile
