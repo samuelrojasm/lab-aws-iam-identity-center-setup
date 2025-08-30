@@ -13,6 +13,7 @@
 - [Troubleshooting común con STS](#troubleshooting)
 - [Comparación: STS vs Access Keys permanentes](#comparar)
 - [Monitoreo y auditoría](#monitoreo)
+- [Interacción AWS STS y Device Authorization (OAuth)](#interaccion)
 - [Integración con otros servicios AWS](#integracion)
 - [Comandos útiles de referencia rápida](#comandos)
 
@@ -300,6 +301,52 @@
     }
     ```
 
+## ⚙️ Interacción AWS STS y Device Authorization (OAuth) <a name="interaccion"></a> 
+1. Device Authorization Flow (OAuth 2.0)
+- **Responsabilidad**: Autenticación y autorización inicial del usuario
+- **Resultado**: Identity Center confirma "Sí, este usuario puede acceder"
+2. AWS STS (Security Token Service)
+- **Responsabilidad**: Convertir esa autorización en credenciales AWS utilizables
+- **Resultado**: AWS STS genera credenciales temporales para usar APIs de AWS
+
+### Interacción práctica:
+- Fase 1: Device Authorization (OAuth)
+    - Comando:
+        ```bash
+        $ aws sso login --profile my-profile
+        # Esto usa OAuth Device Flow para autenticarte con Identity Center
+        ```
+    - Lo que pasa por detrás:
+        - CLI → Identity Center: "Dame un device code"
+        - Identity Center → CLI: "Código ABCD-1234, ve a https://..."
+        - Usuario → Navegador: Autoriza en Identity Center
+        - Identity Center → CLI: "Access token OAuth válido"
+- Fase 2: AWS STS Conversion
+    - Comando
+        ```bash
+        $ aws s3 ls
+        # CLI automáticamente convierte el OAuth token en credenciales AWS
+        ```
+    - Lo que pasa por detrás:
+        - CLI detecta que necesita credenciales AWS
+        - CLI → STS: "AssumeRoleWithSAML usando mi OAuth token"
+        - STS → CLI: "Credenciales AWS temporales"
+        - CLI usa esas credenciales para llamar S3
+- ¿Por qué dos pasos separados?
+    - Separación de responsabilidades:
+        - OAuth: Protocolo estándar para autenticación/autorización
+        - AWS STS: Servicio específico de AWS para credenciales temporales
+- Ventajas:
+    - **Flexibilidad**: Identity Center puede usar diferentes protocolos (OAuth, SAML, etc.)
+    - **Estándares**: OAuth es un protocolo abierto, no vendor-specific
+    - **Seguridad**: Tokens OAuth y credenciales AWS tienen diferentes lifetimes y propósitos
+
+> [!NOTE]
+> "Device Authorization autentica al usuario, luego Identity Center usa AWS STS para generar credenciales AWS"
+
+> Analogía:
+> Device Flow = Mostrar tu ID para entrar al edificio
+> STS = Recibir la tarjeta de acceso temporal para usar las puertas específicas
 
 ## ⚙️ Comandos útiles de referencia rápida <a name="comandos"></a> 
 - Lista de comandos:
