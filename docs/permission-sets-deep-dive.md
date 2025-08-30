@@ -45,8 +45,8 @@
     Role2 --> Acc1
     Role2 --> Acc2
     
-    User1[user@company.com] -.-> Assignment1[Assignment: DeveloperAccess --> Acc1]
-    User2[admin@company.com] -.-> Assignment2[Assignment: ReadOnlyAccess --> Acc2]
+    User1[user@company.com] -.-> Assignment1[Assignment: DeveloperAccess to Acc1]
+    User2[admin@company.com] -.-> Assignment2[Assignment: ReadOnlyAccess to Acc2]
     ```
 - Lo que pasa automáticamente:
     - Creas Permission Set → Identity Center lo almacena como template
