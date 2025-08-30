@@ -54,11 +54,11 @@
 
 ## ⚙️ SAML: La Base de la Federación Web <a name="base"></a> 
 ### ¿Qué es SAML Realmente?
-    - **SAML** es como un "certificado digital de identidad" que un sistema puede enviar a otro. Piénsalo como:
-        - Un pasaporte que tu IdP emite
-        - Contiene "sellos" (atributos) que dicen quién eres y qué puedes hacer
-        - AWS confía en este "pasaporte" porque conoce al país (IdP) que lo emitió
-- El Flujo SAML Explicado Paso a Paso
+- **SAML** es como un "certificado digital de identidad" que un sistema puede enviar a otro. Piénsalo como:
+    - Un pasaporte que tu IdP emite
+    - Contiene "sellos" (atributos) que dicen quién eres y qué puedes hacer
+    - AWS confía en este "pasaporte" porque conoce al país (IdP) que lo emitió
+### El Flujo SAML Explicado Paso a Paso
     🌐 Usuario → AWS Console → "No te conozco, ve con tu IdP"
         ⬇
     👤 Usuario → IdP → "Soy Juan, aquí están mis credenciales"
@@ -87,14 +87,14 @@
 
 ## ⚙️ OAuth Device Flow: Autenticación sin Navegador <a name="base"></a> 
 ### El Problema del CLI
-    - Cuando Carlos ejecuta `aws sso login --profile dev-account`, su terminal no tiene un navegador integrado. No puede mostrar una página de login, no puede manejar redirects, no puede procesar JavaScript.
+- Cuando Carlos ejecuta `aws sso login --profile dev-account`, su terminal no tiene un navegador integrado. No puede mostrar una página de login, no puede manejar redirects, no puede procesar JavaScript.
 ### La Solución Ingeniosa: Device Flow
-    - El Device Flow es como "autenticación por proxy":
-        - **El CLI le dice a AWS**: "Necesito que autentiques este dispositivo"
-        - **AWS responde**: "Ok, dile al usuario que vaya a https://device.sso.aws.com e ingrese el código ABCD-1234"
-        - **El usuario** abre su **navegador** normal y completa la autenticación
-        - Mientras tanto, el CLI está esperando pacientemente preguntando "¿ya terminó?"
-        - Una vez completado, AWS le da al CLI los tokens necesarios
+- El Device Flow es como "autenticación por proxy":
+    - **El CLI le dice a AWS**: "Necesito que autentiques este dispositivo"
+    - **AWS responde**: "Ok, dile al usuario que vaya a https://device.sso.aws.com e ingrese el código ABCD-1234"
+    - **El usuario** abre su **navegador** normal y completa la autenticación
+    - Mientras tanto, el CLI está esperando pacientemente preguntando "¿ya terminó?"
+    - Una vez completado, AWS le da al CLI los tokens necesarios
 ### El Flujo Device Authorization Explicado
     💻 CLI ejecuta: aws sso login --profile dev-account
         ⬇
@@ -115,9 +115,9 @@
 - Los tokens OAuth contienen información diferente a SAML:
     - **Access Token**: "Este token puede acceder a AWS en nombre de Juan"
     - **ID Token**: Contiene claims como:
-        `sub` (subject): "juan.perez@empresa.com"
-        `groups`: ["developers", "marketing-readonly"]
-        `email`: "juan.perez@empresa.com"
+        - `sub` (subject): "juan.perez@empresa.com"
+        - `groups`: ["developers", "marketing-readonly"]
+        - `email`: "juan.perez@empresa.com"
     - Refresh Token: "Usa esto para obtener nuevos tokens sin re-autenticar"
 
 ## ⚙️ AWS STS: El Traductor de Tokens <a name="sts"></a>
