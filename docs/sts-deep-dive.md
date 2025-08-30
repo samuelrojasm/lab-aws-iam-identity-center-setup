@@ -346,7 +346,7 @@
 
 > **Analogía**:
 > - Device Flow = Mostrar tu ID para entrar al edificio
-> - STS = Recibir la tarjeta de acceso temporal para usar las puertas específicas
+> - AWS STS = Recibir la tarjeta de acceso temporal para usar las puertas específicas
 
 ## ⚙️ Comandos útiles de referencia rápida <a name="comandos"></a> 
 - Lista de comandos:
