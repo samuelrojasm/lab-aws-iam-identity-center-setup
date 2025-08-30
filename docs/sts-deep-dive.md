@@ -348,6 +348,18 @@
 > - Device Flow = Mostrar tu ID para entrar al edificio
 > - AWS STS = Recibir la tarjeta de acceso temporal para usar las puertas específicas
 
+### Diferencias clave
+- Tabla comparativa:
+
+|Aspecto|Device Authorization (OAuth)|AWS STS|
+|-------|----------------------------|-------|
+|Protocolo|OAuth 2.0 Device Flow|AWS-specific API|
+|Propósito|"¿Quién eres y qué puedes hacer?"|"Dame credenciales AWS"|
+|Input|User credentials, MFA|OAuth access token + SAML assertion|
+|Output|Access token + identity info|AWS Access Key + Secret + Session Token|
+|Estándar|RFC 8628 (público)|AWS proprietary|
+|Duración|Sesión larga (días/semanas)|Credenciales cortas (minutos/horas)|
+
 ## ⚙️ Comandos útiles de referencia rápida <a name="comandos"></a> 
 - Lista de comandos:
     ```bash
