@@ -145,10 +145,10 @@
         ```
 
 > [!CAUTION]
-> **Problema: Access Keys hardcodeados**<br>
-> - Keys permanentes, riesgo si se comprometen, difíciles de rotar<br>
-> **Problema: Profiles con credenciales**<br>
-> - Credenciales en texto plano en archivos locales
+> - Problema: Access Keys hardcodeados<br>
+>   - Keys permanentes, riesgo si se comprometen, difíciles de rotar<br>
+> - Problema: Profiles con credenciales**<br>
+>   - Credenciales en texto plano en archivos locales
 
 - Con Device Flow (método moderno):
     ```bash
@@ -156,10 +156,10 @@
     ```
 
 > [!NOTE]
-> **Beneficios método: Device Flow<br>
-> - Autorización una vez, tokens temporales automáticos
-> - Renovación transparente
-> - Sin credenciales permanentes almacenadas
+> - Beneficios método: Device Flow<br>
+>   - Autorización una vez, tokens temporales automáticos
+>   - Renovación transparente
+>   - Sin credenciales permanentes almacenadas
 
 ### Comparación práctica:
 
