@@ -11,10 +11,6 @@
 - [Ejemplos de dispositivos con capacidades de entrada limitadas](#limitadas)
 - [ ¿Por qué Device Authorization Flow evita usar el navegador web en el dispositivo?](#navegador)
 
-
-- [](#)
-- [](#)
-
 ---
 
 ## ⚙️ ¿Qué es OAuth 2.0 Device Authorization Flow? <a name="que-es"></a> 
@@ -147,7 +143,7 @@
 > [!CAUTION]
 > - Problema: Access Keys hardcodeados<br>
 >   - Keys permanentes, riesgo si se comprometen, difíciles de rotar<br>
-> - Problema: Profiles con credenciales**<br>
+> - Problema: Profiles con credenciales<br>
 >   - Credenciales en texto plano en archivos locales
 
 - Con Device Flow (método moderno):
