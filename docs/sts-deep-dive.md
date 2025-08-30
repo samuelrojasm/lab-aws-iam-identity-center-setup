@@ -10,10 +10,10 @@
 - [Duración y expiración de tokens](#duracion)
 - [Refresh de credenciales](#refresh)
 - [Seguridad de tokens STS](#seguridad)
-- [ Troubleshooting común con STS](#troubleshooting)
+- [Troubleshooting común con STS](#troubleshooting)
 - [Comparación: STS vs Access Keys permanentes](#comparar)
 - [Monitoreo y auditoría](#monitoreo)
-- [ Integración con otros servicios AWS](#integracion)
+- [Integración con otros servicios AWS](#integracion)
 - [Comandos útiles de referencia rápida](#comandos)
 
 ---
