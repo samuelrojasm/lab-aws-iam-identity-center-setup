@@ -1,6 +1,6 @@
-# 🧪 Guía de Integración Completa de Autenticación AWS
+# 🧪 Guía de Integración de Autenticación AWS
 ### SAML Federation, OAuth 2.0 Device Flow y AWS STS - De Conceptos Básicos a la Implementación
-### Integración Completa de Autenticación AWS (SAML, OAuth 2.0 Device Flow y STS)
+### Integración de Autenticación AWS (SAML, OAuth 2.0 Device Flow y STS)
 
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
