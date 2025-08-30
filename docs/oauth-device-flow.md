@@ -337,7 +337,7 @@ Interacción usuario|Sí (en otro dispositivo)|Sí|No|
 - Controladores de juego no son ideales para escribir texto
 - Navegar por teclados en pantalla es lento
 
-## ⚙️ ¿Por qué Device Authorization Flow evita usar el navegador web en el dispositivo? <a name="nevegador"></a> 
+## ⚙️ ¿Por qué Device Authorization Flow evita usar el navegador web en el dispositivo? <a name="navegador"></a> 
 ### El problema tradicional usando Authorization Code
 - En flujos OAuth normales (como Authorization Code), el proceso es:
     - Aplicación redirige al usuario a una página de login
