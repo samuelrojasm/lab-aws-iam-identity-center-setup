@@ -136,16 +136,16 @@
         export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
         export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
         ```
-        > [!CAUTION]
-        > **Problemas:** Keys permanentes, riesgo si se comprometen, difíciles de rotar
+> [!CAUTION]
+> **Problemas:** Keys permanentes, riesgo si se comprometen, difíciles de rotar
     - Profiles con credenciales:
         ```bash
         [default]
         aws_access_key_id = AKIAIOSFODNN7EXAMPLE  
         aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
         ```
-        > [!CAUTION]
-        > **Problemas:** Credenciales en texto plano en archivos locales
+> [!CAUTION]
+> **Problemas:** Credenciales en texto plano en archivos locales
 - Con Device Flow (método moderno):
     ```bash
     aws sso login --profile my-sso-profile
