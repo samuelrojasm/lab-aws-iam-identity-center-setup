@@ -290,7 +290,7 @@
     - **STS como common backend**: Consistent security model, unified audit
 
 ## ⚙️ Consideraciones importantes <a name="importantes"></a>
-### Puntos de Fallo Potenciales
+### Puntos de fallo potenciales
 1. Configuración incorrecta de Trust Policies
     - **Síntoma**: "Access Denied" incluso con autenticación exitosa
     - **Causa común**: Role trust policy no permite el IdP o faltan conditions
