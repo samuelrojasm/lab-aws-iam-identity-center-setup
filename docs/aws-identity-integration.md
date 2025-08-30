@@ -206,7 +206,7 @@
 
 ## ⚙️ SAML 2.0: Federación Web Tradicional <a name="tradicional"></a> 
 ### Flujo Detallado SAML con STS
-    - Diagrama:
+- Diagrama:
         ```bash
          ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
          │   Usuario   │     │   Browser   │     │    IdP      │     │   AWS STS   │
