@@ -9,7 +9,7 @@
 - [¿Cómo funciona en la práctica?: Escenario típico con AWS CLI](#practica)
 - [¿Por qué CLI es el caso de uso perfecto? ](#caso)
 - [Ejemplos de dispositivos con capacidades de entrada limitadas](#limitadas)
-- [Device Authorization Flow sin navegador web en el dispositivo](#navegador)
+- [ ¿Por qué Device Authorization Flow evita usar el navegador web en el dispositivo?](#navegador)
 
 
 - [](#)
@@ -114,15 +114,15 @@
     - Descarga los tokens automáticamente
     - Ya podemos usar comandos AWS
 ### Ventajas de separ dispositivos (capacidades completas/capacidades limitadas):
-    - Comodidad:
-        - Usas tu teléfono (teclado táctil, autocompletado, biometrics)
-        - No tienes que escribir passwords complejos en terminal
-    - Seguridad:
-        - Credenciales nunca pasan por el dispositivo limitado
-        - Puedes usar 2FA, biometrics, etc. en tu teléfono
-    - Flexibilidad:
-        - Puedes autorizar desde cualquier dispositivo con navegador
-        - Útil en situaciones donde el dispositivo primario no tiene internet
+- Comodidad:
+    - Usas tu teléfono (teclado táctil, autocompletado, biometrics)
+    - No tienes que escribir passwords complejos en terminal
+- Seguridad:
+    - Credenciales nunca pasan por el dispositivo limitado
+    - Puedes usar 2FA, biometrics, etc. en tu teléfono
+- Flexibilidad:
+    - Puedes autorizar desde cualquier dispositivo con navegador
+    - Útil en situaciones donde el dispositivo primario no tiene internet
 
 > [!NOTE] 
 > - OAuth 2.0 = Protocolo flexible y bueno
@@ -146,19 +146,23 @@
 
 > [!CAUTION]
 > **Problemas: Access Keys hardcodeados**<br>
-> Keys permanentes, riesgo si se comprometen, difíciles de rotar
+> - Keys permanentes, riesgo si se comprometen, difíciles de rotar
 
 > [!CAUTION]
 > **Problemas: Profiles con credenciales**<br>
-> Credenciales en texto plano en archivos locales
+> - Credenciales en texto plano en archivos locales
 
 - Con Device Flow (método moderno):
     ```bash
     aws sso login --profile my-sso-profile
-    # Autorización una vez, tokens temporales automáticos
-    # Renovación transparente
-    # Sin credenciales permanentes almacenadas
     ```
+
+> [!CAUTION]
+> **Beneficios método: Device Flow<br>
+> - Autorización una vez, tokens temporales automáticos
+> - Renovación transparente
+> - Sin credenciales permanentes almacenadas
+
 ### Comparación práctica:
 
 |Método|Seguridad|Comodidad|Mantenimiento|
@@ -186,7 +190,7 @@
 - Controladores de juego no son ideales para escribir texto
 - Navegar por teclados en pantalla es lento
 
-## ⚙️ Device Authorization Flow sin navegador web en el dispositivo <a name="nevegador"></a> 
+## ⚙️ ¿Por qué Device Authorization Flow evita usar el navegador web en el dispositivo? <a name="nevegador"></a> 
 ### El problema tradicional usando Authorization Code
 - En flujos OAuth normales (como Authorization Code), el proceso es:
     - Aplicación redirige al usuario a una página de login
