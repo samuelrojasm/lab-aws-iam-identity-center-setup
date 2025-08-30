@@ -535,6 +535,7 @@
 
 ## ⚙️ Configuración Práctica para un laboratoio de pruebas <a name="lab"></a> 
 ### Prerrequisitos
+- Requerimentos
     ```bash
     # Herramientas necesarias
     - AWS CLI v2
@@ -704,6 +705,6 @@
 
         if __name__ == "__main__":
             main()
-        ```
+    ```
 ---
 
