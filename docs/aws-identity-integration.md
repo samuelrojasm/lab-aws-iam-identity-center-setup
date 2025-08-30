@@ -25,12 +25,12 @@
 
 ## ⚙️ Introducción y Conceptos Fundamentales <a name="intro"></a> 
 - ¿Qué Problemas Resolvemos?
-En el mundo moderno de aplicaciones distribuidas, enfrentamos varios desafíos:
-    - Usuarios móviles que necesitan acceso desde dispositivos sin navegador
-    - Aplicaciones de línea de comandos que requieren autenticación
-    - Sistemas IoT que no pueden mostrar interfaces web
-    - Federación empresarial que debe integrarse con sistemas legacy
-    - Gestión centralizada de credenciales y permisos
+    - En el mundo moderno de aplicaciones distribuidas, enfrentamos varios desafíos:
+        - Usuarios móviles que necesitan acceso desde dispositivos sin navegador
+        - Aplicaciones de línea de comandos que requieren autenticación
+        - Sistemas IoT que no pueden mostrar interfaces web
+        - Federación empresarial que debe integrarse con sistemas legacy
+        - Gestión centralizada de credenciales y permisos
 
 
 ---
