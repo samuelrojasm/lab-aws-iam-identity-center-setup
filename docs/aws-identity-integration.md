@@ -44,37 +44,37 @@
     B --> F[Web Browsers<br/>Enterprise SSO]
     C --> G[CLI Tools<br/>IoT Devices<br/>Mobile Apps]
     
-    style D fill:#ff9999
-    style B fill:#99ccff
-    style C fill:#99ffcc
+    style D fill:#52796F,stroke:#354F52,color:#fff
+    style B fill:#84A98C,stroke:#52796F,color:#000
+    style C fill:#CAD2C5,stroke:#84A98C,color:#000
     ```
 ### Arquitectura de Autenticación y Autorización
 - Flujo Conceptual Completo
     ```bash
-        ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
     │                 │    │                 │    │                 │
     │   Identity      │    │   OAuth 2.0     │    │   SAML 2.0      │
     │   Provider      │    │   Authorization │    │   Service       │
     │   (IdP)         │    │   Server        │    │   Provider      │
     │                 │    │                 │    │                 │
     └─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
-            │                      │                      │
-            │ Authenticates        │ Issues Tokens        │ Issues Assertions
-            │                      │                      │
-            ▼                      ▼                      ▼
+              │                      │                      │
+              │ Authenticates        │ Issues Tokens        │ Issues Assertions
+              │                      │                      │
+              ▼                      ▼                      ▼
     ┌─────────────────────────────────────────────────────────────────┐
-    │                     AWS STS (Security Token Service)           │
+    │                     AWS STS (Security Token Service)            │
     │                                                                 │
-    │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
-    │  │ AssumeRoleWith  │  │ AssumeRoleWith  │  │ AssumeRoleWith  │ │
-    │  │ WebIdentity     │  │ SAML            │  │ OAuth2          │ │
-    │  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+    │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+    │  │ AssumeRoleWith  │  │ AssumeRoleWith  │  │ AssumeRoleWith  │  │
+    │  │ WebIdentity     │  │ SAML            │  │ OAuth2          │  │
+    │  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
     └─────────────────────────────────────────────────────────────────┘
             │                      │                      │
             ▼                      ▼                      ▼
     ┌─────────────────────────────────────────────────────────────────┐
-    │                        AWS Services                            │
-    │   EC2 │ S3 │ RDS │ Lambda │ CloudFormation │ EKS │ ...        │
+    │                        AWS Services                             │
+    │   EC2 │ S3 │ RDS │ Lambda │ CloudFormation │ EKS │ ...          │
     └─────────────────────────────────────────────────────────────────┘
     ```
 
