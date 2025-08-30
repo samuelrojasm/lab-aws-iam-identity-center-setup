@@ -21,8 +21,9 @@
 - [SAML: La Base de la Federación Web](#base)
 - [AWS STS: El Traductor de Tokens](#sts)
 - [La Danza Completa: `aws sso login --profile`](#danza)
-- [¿Por Qqé esta arquitectura funciona?](#funciona)
-- [Diferencias clave rntre los flows](#flows)
+- [¿Por qué esta arquitectura funciona?](#funciona)
+- [Diferencias clave entre los flows](#flows)
+- [## ⚙️ Consideraciones importantes](#importantes)
 
 ## ⚙️ El problema que resolvemos <a name="intro"></a> 
 - Imagina una organización moderna donde los empleados necesitan acceder a AWS desde múltiples contextos:
@@ -287,8 +288,9 @@
     - **SAML para web**: Experiencia optimizada, attributes ricos
     - **OAuth para programmatic**: Refresh tokens, simplicidad para APIs
     - **STS como common backend**: Consistent security model, unified audit
-### Consideraciones Importantes
-#### Puntos de Fallo Potenciales
+
+## ⚙️ Consideraciones importantes <a name="importantes"></a>
+### Puntos de Fallo Potenciales
 1. Configuración incorrecta de Trust Policies
     - **Síntoma**: "Access Denied" incluso con autenticación exitosa
     - **Causa común**: Role trust policy no permite el IdP o faltan conditions
@@ -304,7 +306,7 @@
     - **Síntoma**: CLI deja de funcionar después de período de inactividad
     - **Causa común**: Refresh tokens expirados o revocados
     - **Solución**: Re-ejecutar `aws sso login --profile`
-#### Mejores prácticas de operación
+### Mejores prácticas de operación
 1. Monitoring y Alerting
     - Monitor failed authentication attempts
     - Alert on unusual patterns (geography, time, volume)
@@ -332,7 +334,7 @@
     - Diferentes sistemas de permisos para web vs API
     - Credenciales de larga duración (security risk)
     - Gestión manual de access patterns
-### El futuro de fsta Arquitectura
+### El futuro de esta Arquitectura
 - Las tendencias emergentes que se integran naturalmente:
     - **WebAuthn/FIDO2**: Puede integrarse como factor adicional en SAML flow
     - **Zero Trust**: STS tokens naturalmente support conditional access
