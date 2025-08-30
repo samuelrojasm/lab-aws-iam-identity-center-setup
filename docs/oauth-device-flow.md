@@ -137,11 +137,6 @@
         export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
         export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
         ```
-
-> [!CAUTION]
-> **Problemas:**<br>
-> Keys permanentes, riesgo si se comprometen, difíciles de rotar
-
     - Profiles con credenciales:
         ```bash
         [default]
@@ -150,7 +145,11 @@
         ```
 
 > [!CAUTION]
-> **Problemas:**<br>
+> **Problemas: Access Keys hardcodeados**<br>
+> Keys permanentes, riesgo si se comprometen, difíciles de rotar
+
+> [!CAUTION]
+> **Problemas: Profiles con credenciales**<br>
 > Credenciales en texto plano en archivos locales
 
 - Con Device Flow (método moderno):
