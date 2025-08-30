@@ -49,21 +49,6 @@
     User2[admin_company.com] -.-> Assignment2[Assignment: ReadOnlyAccess → Acc2]
     ```
 
-    ```mermaid
-    flowchart TD
-    PS1[DeveloperAccess] --> Role1[Role_Developer_abc123]
-    PS2[ReadOnlyAccess] --> Role2[Role_ReadOnly_def456]
-
-    Role1 --> Acc1[Account_111111111111]
-    Role1 --> Acc2[Account_222222222222]
-    Role2 --> Acc1
-    Role2 --> Acc2
-    
-    User1[user_company_com] -.-> Assignment1[Dev_to_Acc1]
-    User2[admin_company_com] -.-> Assignment2[ReadOnly_to_Acc2]
-     ```
-
-
 - Lo que pasa automáticamente:
     - Creas Permission Set → Identity Center lo almacena como template
     - Haces Account Assignment → Identity Center crea IAM Role en esa cuenta
