@@ -37,20 +37,64 @@
     |CLI/TV/IoT|Device Authorization Flow|Sin navegador o entrada limitada|
 
 ## ⚙️ El problema de usar Authorization Code Flow en CLI <a name="problema"></a> 
-- Usar `Authorization Code Flow` para CLI es problemático
-- ¿como funciona `Authorization Code Flow`?
+- Usar `Authorization Code Flow` para CLI es problemático.
+- ¿Como funciona `Authorization Code Flow`?
     > 1.- Aplicación → "Ve a esta URL para loggearte"<br>
     > 2.- Usuario → Abre navegador y va a la URL<br>
     > 3.- Usuario → Se loggea en el navegador<br>
     > 4.- Proveedor → Redirige de vuelta a la aplicación<br>
     > 5.- Aplicación → Recibe el código y lo intercambia por tokens<br>
-- ¿cuál es el probema de usar el flujo `Authorization Code Flow` con CLI?
+- ¿Cuál es el probema de usar el flujo `Authorization Code Flow` con CLI?
     > - **Paso 1: "Ve a esta URL"**
     >   - CLI no puede "abrir" un navegador de forma confiable
     >   - En servidores SSH puede no haber navegador disponible<
     > - **Paso 4: "Redirige de vuelta a la aplicación"**
     >   - ¿A dónde redirigir? CLI no tiene una URL
     >   - ¿Cómo captura el CLI la respuesta del redirect?
+- Ejemplo del problema real:
+    ```bash
+    # Lo que NO puede hacer un CLI tradicional:
+    $ aws s3 ls
+    Error: Necesitas autenticarte
+    Ve a: https://auth.aws.com/login?redirect_uri=???
+    # ¿Redirect a dónde? ¿http://localhost:8080?
+    # ¿Qué pasa si el puerto está ocupado?
+    # ¿Qué pasa si no hay navegador disponible?
+    ```
+- ¿Cómo Device Flow resueve el problema?
+    - Device Flow elimina la necesidad de redirect:
+        > 1.- CLI → "Necesito autorización"<br>
+        > 2.- Proveedor → "Aquí tienes un código: ABCD-1234"<br>
+        > 3.- CLI → "Usuario, ve a esta URL e ingresa: ABCD-1234"<br>
+        > 4.- Usuario → Va a la URL en CUALQUIER dispositivo<br>
+        > 5.- Usuario → Ingresa el código y se autentica<br>
+        > 6.- CLI → Hace polling: "¿Ya me autorizó?"<br>
+        > 7.- Proveedor → "Sí, aquí están tus tokens"<br>
+> [!NOTE]  
+> **Ventaja clave:**
+> - No hay redirect → No necesita capturar respuestas HTTP
+> - No abre navegador → Funciona en cualquier entorno
+> - Usuario decide qué dispositivo usar → Máxima flexibilidad
+
+- Flujo visual de Authorization Code Flow
+    ```bash
+    CLI ←--[redirect]-- Navegador ←--[auth]-- Usuario
+    ↑                     ↑
+    [abrir browser]    [¿cómo capturar?]
+    ```
+
+- Flujo visual Device Authorization Flow
+
+
+
+
+> - OAuth 2.0 = Protocolo flexible y bueno
+> - Device Flow = Una herramienta específica dentro de OAuth 2.0
+> - Authorization Code Flow = Otra herramienta, pero para casos diferentes
+
+
+
+
 
 - La solución es usar `Device Authorization Flow`
 > [!NOTE]  
