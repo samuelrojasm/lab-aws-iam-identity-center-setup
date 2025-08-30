@@ -101,7 +101,7 @@ sequenceDiagram
         "verification_uri": "https://device.sso.us-east-1.amazonaws.com/",
         "verification_uri_complete": "https://device.sso.us-east-1.amazonaws.com/?user_code=QWER-TYUI",
         "expires_in": 600,
-    "interval": 5
+        "interval": 5
     }
 
 > Identity Center retorna:
