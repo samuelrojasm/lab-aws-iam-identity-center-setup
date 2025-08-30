@@ -69,28 +69,166 @@ sequenceDiagram
     Identity Center-->>AWS CLI: 9. Retorna access_token
 ```
 ### Paso a paso detallado:
-1. Initiate Device Authorization
-- AWS CLI solicita un device code a Identity Center
-- No se requieren credenciales en este punto
-2. Device Authorization Response
-- Identity Center retorna:
-    - `device_code`: Código único para el dispositivo
-    - `user_code`: Código que el usuario debe ingresar
-    - `verification_uri`: URL donde el usuario debe ir
-    - `expires_in`: Tiempo de expiración
-3. User Interaction
-- AWS CLI muestra al usuario el `user_code` y la `verification_uri`
-- Usuario abre la URL en cualquier navegador
-- Usuario ingresa el `user_code`
-4. User Authorization
-- Usuario se autentica en Identity Center
-- Usuario autoriza al dispositivo (AWS CLI)
-5. Device Polling
-- Mientras tanto, AWS CLI hace polling al endpoint de tokens
-- Verifica si el usuario ya autorizó
-6. Token Issuance
-- Una vez autorizado, Identity Center retorna los tokens
-- AWS CLI puede ahora hacer llamadas autenticadas
+1. Solicita device code
+- **Qué hace AWS CLI**: Envía una petición HTTP POST al endpoint `/device_authorization` de Identity Center
+- **Datos enviados**: `client_id` (identificador de la aplicación AWS CLI) y `scope` (permisos solicitados como `sso:account:access`)
+- **Autenticación**: No se requieren credenciales de usuario en este punto, solo identificación de la aplicación
+- **Timing**: Ocurre inmediatamente cuando ejecutas `aws sso login`
+- **Request ejemplo**:
+    ```http
+    POST /device_authorization
+    Content-Type: application/x-www-form-urlencoded
+
+    client_id=arn:aws:sso::123456789012:application/ssoins-abc123&scope=sso:account:access
+    ```
+
+> AWS CLI solicita un device code a Identity Center
+> No se requieren credenciales en este punto
+
+2. Retorna device_code + user_code + verification_uri
+- **Response de Identity Center**: JSON con múltiples campos esenciales
+- **device_code**: Cadena larga y única (ej:`abcdef123456789...`) que identifica esta sesión específica
+- **user_code**: Código corto y amigable (ej: `QWER-TYUI`) que el usuario puede escribir fácilmente
+- **verification_uri**: URL donde el usuario debe ir (ej: `https://device.sso.us-east-1.amazonaws.com/`)
+- **verification_uri_complete**: URL que incluye el user_code pre-poblado (opcional)
+- **expires_in**: Tiempo en segundos (típicamente 600 = 10 minutos)
+- **interval**: Frecuencia recomendada para polling (típicamente 5 segundos)
+- **Response ejemplo**:
+    ```json
+    {
+        "device_code": "abcdef123456789abcdef123456789abcdef123456789",
+        "user_code": "QWER-TYUI",
+        "verification_uri": "https://device.sso.us-east-1.amazonaws.com/",
+        "verification_uri_complete": "https://device.sso.us-east-1.amazonaws.com/?user_code=QWER-TYUI",
+        "expires_in": 600,
+    "interval": 5
+    }
+
+> Identity Center retorna:
+>   - `device_code`: Código único para el dispositivo
+>   - `user_code`: Código que el usuario debe ingresar
+>   - `verification_uri`: URL donde el usuario debe ir
+>   - `expires_in`: Tiempo de expiración
+
+3. Muestra user_code y URL
+- **Output del CLI**: Formatea la información de manera user-friendly
+- **Auto-browser**: AWS CLI intenta abrir automáticamente el navegador usando el comando del sistema
+- **Fallback**: Si no puede abrir el navegador, muestra las instrucciones manuales
+- **Información mostrada**: URL, código de usuario, y instrucciones claras
+- **Mensaje típico**:
+    ```bash
+    Attempting to automatically open the SSO authorization page in your default browser.
+    If the browser does not open or you wish to use a different device to authorize this request, 
+    open the following URL:
+
+    https://device.sso.us-east-1.amazonaws.com/
+
+    Then enter the code: QWER-TYUI
+
+    Waiting for authorization to complete...
+    ```
+
+> AWS CLI muestra al usuario el `user_code` y la `verification_uri`
+
+4. Abre verification_uri
+- **Usuario toma acción**: Puede usar cualquier dispositivo con navegador (smartphone, tablet, otra laptop)
+- **Página inicial**: Identity Center muestra una página de bienvenida para verificación de dispositivos
+- **Validaciones**: La página verifica que la URL es válida y está activa
+- **Experiencia**: Página limpia con un campo para ingresar el código de usuario
+- **Seguridad**: HTTPS obligatorio, validación del dominio AWS oficial
+- **UI típica**: Formulario simple con campo de texto para el user_code
+
+> Usuario abre la URL en cualquier navegador
+
+5. Ingresa user_code
+- **Input del usuario**: Escribe el código exacto mostrado por CLI (case-sensitive)
+- **Validación inmediata**: Identity Center verifica que el código existe y no ha expirado
+- **Feedback**: Página confirma si el código es válido o muestra error específico
+- **Estados posibles**:
+    - ✅ Código válido → Procede al siguiente paso
+    - ❌ Código inválido → "Code not found or expired"
+    - ❌ Código expirado → "This code has expired, please restart the process"
+- **UX**: Típicamente el código se formatea automáticamente (QWER-TYUI)
+
+> Usuario ingresa el `user_code`
+
+6. Autoriza el dispositivo
+- **Autenticación del usuario**: Pantalla de login estándar de Identity Center
+- **Credenciales**: Username/password del usuario, más MFA si está configurado
+- **Información del dispositivo**: Muestra detalles sobre qué está solicitando autorización:
+    - Aplicación: "AWS CLI"
+    - Dispositivo: Información del sistema operativo/hostname (si disponible)
+    - Permisos: Lista de accounts/roles que tendrá acceso
+- **Pantalla de confirmación**: "¿Autorizar AWS CLI en [nombre-dispositivo] para acceder a tus cuentas AWS?"
+- **Opciones**: Botones "Authorize" y "Deny"
+- **Audit logging**: Identity Center registra la autorización para auditoría
+
+> Usuario se autentica en Identity Center
+> Usuario autoriza al dispositivo (AWS CLI)
+
+7. Polling por tokens (loop)
+- **Proceso en background**: AWS CLI ejecuta un loop mientras el usuario completa la autorización
+- **HTTP Requests**: Peticiones POST continuas al endpoint `/token`
+- **Frecuencia**: Cada 5 segundos (según el `interval` recibido en paso 2)
+- **Request formato**:
+    ```http
+    POST /token
+    Content-Type: application/x-www-form-urlencoded
+
+    grant_type=urn:ietf:params:oauth:grant-type:device_code
+    &device_code=abcdef123456789abcdef123456789abcdef123456789
+    &client_id=arn:aws:sso::123456789012:application/ssoins-abc123
+    ```
+- **Rate limiting**: AWS aplica límites para evitar abuse del polling
+- **Timeout**: Continúa hasta expiración del device_code (10 minutos típicamente)
+
+> Mientras tanto, AWS CLI hace polling al endpoint de tokens
+> Verifica si el usuario ya autorizó
+
+8. Pending/authorized
+- **Response estados**: Identity Center responde con diferentes HTTP status codes y mensajes
+- **authorization_pending**:
+    - HTTP 400 Bad Request
+    - Body: `{"error": "authorization_pending"}`
+    - Significado: Usuario aún no ha completado el proceso
+- **slow_down**:
+    - HTTP 400 Bad Request
+    - Body: `{"error": "slow_down"}`
+    - Significado: CLI está haciendo polling muy rápido, debe incrementar intervalo
+- **access_denied**:
+    - HTTP 400 Bad Request
+    - Body: `{"error": "access_denied"}`
+    - Significado: Usuario rechazó la autorización
+- **expired_token**:
+    - HTTP 400 Bad Request
+    - Body: `{"error": "expired_token"}`
+    - Significado: Device code expiró, debe reiniciar proceso
+- **Autorización exitosa**: 
+    - HTTP 200 OK con tokens (paso 9)
+
+9. Retorna access_token
+- **Response exitoso**: HTTP 200 OK con JSON conteniendo tokens
+- **Tokens incluidos**:
+    - `access_token`: Token JWT para hacer llamadas a AWS APIs
+    - `token_type`: Típicamente "Bearer"
+    - `expires_in`: Duración del token en segundos (típicamente 3600 = 1 hora)
+    - `refresh_token`: Para renovar el access_token sin re-autenticación
+- **Almacenamiento local**: AWS CLI guarda los tokens en `~/.aws/sso/cache/`
+- **Formato de archivo**: JSON cifrado con metadata adicional
+- **Configuración de perfil**: CLI actualiza la configuración para usar estos tokens
+- **Response ejemplo**:
+    ```json
+    {
+        "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "token_type": "Bearer",
+        "expires_in": 3600,
+        "refresh_token": "def50200abcdef123456789..."
+    }
+    ```
+- **Confirmación**: CLI muestra mensaje "Successfully logged in" y está listo para usar
+
+> Una vez autorizado, Identity Center retorna los tokens
+> AWS CLI puede ahora hacer llamadas autenticadas
 
 ## ⚙️ Ejemplo práctico: AWS CLI SSO Login <a name="ejemplo"></a> 
 - Comando inicial:
