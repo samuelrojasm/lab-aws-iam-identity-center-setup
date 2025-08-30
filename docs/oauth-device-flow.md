@@ -145,11 +145,9 @@
         ```
 
 > [!CAUTION]
-> **Problemas: Access Keys hardcodeados**<br>
+> **Problema: Access Keys hardcodeados**<br>
 > - Keys permanentes, riesgo si se comprometen, difíciles de rotar
-
-> [!CAUTION]
-> **Problemas: Profiles con credenciales**<br>
+> **Problema: Profiles con credenciales**<br>
 > - Credenciales en texto plano en archivos locales
 
 - Con Device Flow (método moderno):
@@ -157,7 +155,7 @@
     aws sso login --profile my-sso-profile
     ```
 
-> [!CAUTION]
+> [!NOTE]
 > **Beneficios método: Device Flow<br>
 > - Autorización una vez, tokens temporales automáticos
 > - Renovación transparente
