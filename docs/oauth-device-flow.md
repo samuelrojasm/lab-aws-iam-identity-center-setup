@@ -29,6 +29,7 @@
     - Device Authorization Flow - Para dispositivos limitados
     - Implicit Flow - Para SPAs (ya no recomendado)
 - Comparación de uso de flujos de OAuth
+
     | Escenario    |Flujo OAuth recomendado|¿Por qué?                               |
     |--------------|-----------------------|----------------------------------------|
     |Aplicación web|Authorization Code Flow|Tiene navegador, puede manejar redirects|
@@ -38,24 +39,24 @@
 ## ⚙️ El problema de usar Authorization Code Flow en CLI <a name="problema"></a> 
 - Usar `Authorization Code Flow` para CLI es problemático
 - ¿como funciona `Authorization Code Flow`?
-    > 1. Aplicación → "Ve a esta URL para loggearte"<br>
-    > 2. Usuario → Abre navegador y va a la URL<br>
-    > 3. Usuario → Se loggea en el navegador<br>
-    > 4. Proveedor → Redirige de vuelta a la aplicación<br>
-    > 5. Aplicación → Recibe el código y lo intercambia por tokens<br>
+    > 1.- Aplicación → "Ve a esta URL para loggearte"<br>
+    > 2.- Usuario → Abre navegador y va a la URL<br>
+    > 3.- Usuario → Se loggea en el navegador<br>
+    > 4.- Proveedor → Redirige de vuelta a la aplicación<br>
+    > 5.- Aplicación → Recibe el código y lo intercambia por tokens<br>
 - ¿cuál es el probema de usar el flujo `Authorization Code Flow` con CLI?
     > **Paso 1: "Ve a esta URL"**<br>
-    > - CLI no puede "abrir" un navegador de forma confiable<br>
+    > - CLI no puede "abrir" un navegador de forma confiable
     > - En servidores SSH puede no haber navegador disponible
-    > **Paso 4: "Redirige de vuelta a la aplicación"**
+    > **Paso 4: "Redirige de vuelta a la aplicación"**<br>
     > - ¿A dónde redirigir? CLI no tiene una URL
     > - ¿Cómo captura el CLI la respuesta del redirect?
 
 - La solución es usar `Device Authorization Flow`
 > [!NOTE]  
-> OAuth 2.0 = Protocolo flexible y bueno
-> Device Flow = Una herramienta específica dentro de OAuth 2.0
-> Authorization Code Flow = Otra herramienta, pero para casos diferentes
+> - OAuth 2.0 = Protocolo flexible y bueno
+> - Device Flow = Una herramienta específica dentro de OAuth 2.0
+> - Authorization Code Flow = Otra herramienta, pero para casos diferentes
 
 
 ## ⚙️ Ejemplos de dispositivos con capacidades de entrada limitadas <a name="limitadas"></a> 
