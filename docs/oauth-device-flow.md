@@ -47,7 +47,7 @@
 - ¿cuál es el probema de usar el flujo `Authorization Code Flow` con CLI?
     > **Paso 1: "Ve a esta URL"**<br>
     > - CLI no puede "abrir" un navegador de forma confiable
-    > - En servidores SSH puede no haber navegador disponible
+    > - En servidores SSH puede no haber navegador disponible<br>
     > **Paso 4: "Redirige de vuelta a la aplicación"**<br>
     > - ¿A dónde redirigir? CLI no tiene una URL
     > - ¿Cómo captura el CLI la respuesta del redirect?
