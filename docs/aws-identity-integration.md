@@ -207,7 +207,7 @@
 ## ⚙️ SAML 2.0: Federación Web Tradicional <a name="tradicional"></a> 
 ### Flujo Detallado SAML con STS
 - Diagrama:
-        ```bash
+    ```bash
          ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
          │   Usuario   │     │   Browser   │     │    IdP      │     │   AWS STS   │
          │             │     │             │     │  (SAML)     │     │             │
@@ -234,7 +234,7 @@
                 │ 8. Access AWS     │◄───────────────────────────────────── ┤
                 │ with Temp Creds   │                   │                   │
                 │◄──────────────────┤                   │                   │
-        ```
+    ```
 ### Configuración de SAML Identity Provider en AWS
 1. Crear SAML Identity Provider
     - Comando
