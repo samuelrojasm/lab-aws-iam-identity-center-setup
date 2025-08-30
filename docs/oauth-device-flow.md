@@ -92,6 +92,7 @@
 
 ## ⚙️ ¿Cómo funciona en la práctica?: Escenario típico con AWS CLI<a name="practica"></a> 
 ### El usuario autoriza en un dispositivo separado
+- Dispositivo de incio de sesión (pueder estar limitado)
     ```bash
     # En nuestra laptop/servidor (dispositivo limitado)
     $ aws sso login --profile my-profile
@@ -138,6 +139,7 @@
         ```
 > [!CAUTION]
 > **Problemas:** Keys permanentes, riesgo si se comprometen, difíciles de rotar
+
     - Profiles con credenciales:
         ```bash
         [default]
