@@ -4,6 +4,13 @@
 
 ## Contenido
 - [¿Qué es OAuth 2.0 Device Authorization Flow](#ques-es)
+- [¿Por qué AWS IAM Identity Center usa Device Flow?](#uso-en-iam)
+- [¿Cómo funciona el Device Flow?](#diagrama)
+- [Ejemplo práctico: AWS CLI SSO Login](#ejemplo)
+- [Ventajas del Device Flow](#ventajas)
+- [Consideraciones de seguridad](#seguridad")
+- [Diferencias con otros OAuth flows](#diferencia)
+- [Troubleshooting común](#problemas)
 - [El problema de usar Authorization Code Flow en CLI](#problema)
 - [¿Cómo Device Flow resueve el problema?](#solucion)
 - [¿Cómo funciona en la práctica?: Escenario típico con AWS CLI](#practica)
@@ -32,6 +39,152 @@
     |Aplicación web|Authorization Code Flow|Tiene navegador, puede manejar redirects|
     |API server-to-server|Client Credentials Flow|No hay usuario final|
     |CLI/TV/IoT|Device Authorization Flow|Sin navegador o entrada limitada|
+
+## ⚙️ ¿Por qué AWS IAM Identity Center usa Device Flow?  <a name="uso-en-iam"></a>
+- AWS IAM Identity Center utiliza este flujo para el AWS CLI porque:
+    - **CLI no tiene interfaz gráfica**: No puede abrir ventanas de navegador
+    - **Experiencia de usuario mejorada**: Usuario puede autorizar desde cualquier dispositivo
+    - **Seguridad**: No se almacenan credenciales permanentes en el CLI
+    - **Multiplataforma**: Funciona igual en Windows, macOS, Linux
+
+## ⚙️ ¿Cómo funciona el Device Flow? <a name="diagrama"></a>
+### Diagrama del proceso:
+```mermaid
+sequenceDiagram
+    participant AWS CLI
+    participant Identity Center
+    participant Usuario
+    participant Navegador
+    
+    AWS CLI->>Identity Center: 1. Solicita device code
+    Identity Center-->>AWS CLI: 2. Retorna device_code + user_code + verification_uri
+    AWS CLI->>Usuario: 3. Muestra user_code y URL
+    Usuario->>Navegador: 4. Abre verification_uri
+    Usuario->>Navegador: 5. Ingresa user_code
+    Navegador->>Identity Center: 6. Autoriza el dispositivo
+    loop Polling
+        AWS CLI->>Identity Center: 7. Polling por tokens
+        Identity Center-->>AWS CLI: 8. pending/authorized
+    end
+    Identity Center-->>AWS CLI: 9. Retorna access_token
+```
+### Paso a paso detallado:
+1. Initiate Device Authorization
+- AWS CLI solicita un device code a Identity Center
+- No se requieren credenciales en este punto
+2. Device Authorization Response
+- Identity Center retorna:
+    - `device_code`: Código único para el dispositivo
+    - `user_code`: Código que el usuario debe ingresar
+    - `verification_uri`: URL donde el usuario debe ir
+    - `expires_in`: Tiempo de expiración
+3. User Interaction
+- AWS CLI muestra al usuario el `user_code` y la `verification_uri`
+- Usuario abre la URL en cualquier navegador
+- Usuario ingresa el `user_code`
+4. User Authorization
+- Usuario se autentica en Identity Center
+- Usuario autoriza al dispositivo (AWS CLI)
+5. Device Polling
+- Mientras tanto, AWS CLI hace polling al endpoint de tokens
+- Verifica si el usuario ya autorizó
+6. Token Issuance
+- Una vez autorizado, Identity Center retorna los tokens
+- AWS CLI puede ahora hacer llamadas autenticadas
+
+## ⚙️ Ejemplo práctico: AWS CLI SSO Login <a name="ejemplo"></a> 
+- Comando inicial:
+    ```bash
+    aws sso login --profile my-sso-profile
+    ```
+- Output típico:
+    ```bash
+    Attempting to automatically open the SSO authorization page in your default browser.
+    If the browser does not open or you wish to use a different device to authorize this request, open the following URL:
+
+    https://device.sso.us-east-1.amazonaws.com/
+
+    Then enter the code:
+
+    QWER-TYUI
+    ```
+- Lo que pasa por detrás:
+1. Request inicial (simplificado):
+    ```http
+    POST https://oidc.us-east-1.amazonaws.com/device_authorization
+    Content-Type: application/x-www-form-urlencoded
+
+    client_id=arn:aws:sso::123456789012:application/ssoins-1234567890abcdef
+    scope=sso:account:access
+    ```
+2. Response (simplificado):
+    ```json
+    {
+        "device_code": "abcdef123456...",
+        "user_code": "QWER-TYUI",
+        "verification_uri": "https://device.sso.us-east-1.amazonaws.com/",
+        "verification_uri_complete": "https://device.sso.us-east-1.amazonaws.com/?user_code=QWER-TYUI",
+        "expires_in": 600,
+        "interval": 5
+    }
+    ```
+3. Polling requests:
+    ```http
+    POST https://oidc.us-east-1.amazonaws.com/token
+    Content-Type: application/x-www-form-urlencoded
+
+    grant_type=urn:ietf:params:oauth:grant-type:device_code
+    &device_code=abcdef123456...
+    &client_id=arn:aws:sso::123456789012:application/ssoins-1234567890abcdef
+    ```
+## ⚙️ Ventajas del Device Flow<a name="ventajas"></a> 
+### Para usuarios:
+- **Conveniencia**: Pueden autorizar desde cualquier dispositivo
+- **Seguridad**: No ingresan credenciales en la terminal
+- **Flexibilidad**: Pueden usar un dispositivo más cómodo para la autenticación
+### Para aplicaciones:
+- **Sin almacenamiento de credenciales**: No necesita guardar passwords
+- **Multiplataforma**: Funciona en cualquier sistema operativo
+- **Sin navegador**: No requiere integración con browsers
+### Para administradores:
+- **Control centralizado**: Todas las autorizaciones pasan por Identity Center
+- **Auditoría**: Registro completo de autorizaciones
+- **Políticas**: Pueden aplicar políticas de acceso condicional
+
+## ⚙️ Consideraciones de seguridad<a name="seguridad"></a> 
+### Buenas prácticas:
+- **Códigos únicos**: Los user_codes son únicos y de un solo uso
+- **Expiración**: Los device codes expiran (típicamente 10-15 minutos)
+- **Rate limiting**: Límites en el polling para evitar abuso
+- **Validación**: Verificación del dispositivo antes de emitir tokens
+### Posibles ataques y mitigaciones:
+- **Code interception**: Los códigos son de corta duración
+- **Phishing**: URLs oficiales verificables
+- **Brute force**: Rate limiting en attempts
+
+## ⚙️ Diferencias con otros OAuth flows<a name="diferencia"></a> 
+
+|Aspecto|Device Flow|Authorization Code|Client Credentials|
+|-------|-----------|------------------|------------------|
+|Uso típico|CLI, TV, IoT|Web apps|Server-to-server|
+|Navegador requerido|En otro dispositivo|En el mismo dispositivo|No|
+Interacción usuario|Sí (en otro dispositivo)|Sí|No|
+|Redirect URI|No aplicable|Requerida|No aplicable|
+|Complejidad|Media|Baja|Muy baja|
+
+## ⚙️ Troubleshooting común<a name="problemas"></a>
+### Error: "authorization_pending"
+> **Causa:** Usuario aún no ha completado la autorización<br>
+> **Solución:** Continuar polling, verificar que usuario complete el proceso
+### Error: "slow_down"
+> **Causa**: Polling muy frecuente<br>
+> **Solución**: Incrementar el intervalo de polling
+### Error: "expired_token"
+> **Causa**: Device code expiró<br>
+> **Solución**: Reiniciar el flujo completo
+### Error: "access_denied"
+> **Causa**: Usuario rechazó la autorización<br>
+> **Solución**: Usuario debe reintentar y aceptar
 
 ## ⚙️ El problema de usar Authorization Code Flow en CLI <a name="problema"></a> 
 - Usar `Authorization Code Flow` para CLI es problemático.
@@ -207,6 +360,20 @@
 ---
 
 ## 🔗 Referencias
-- []()
+### Especificaciones:
+- [RFC 8628: OAuth 2.0 Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
+- [RFC 6819: OAuth 2.0 Security Best Practices](https://datatracker.ietf.org/doc/html/rfc6819)
+### Documentación AWS:
+- [AWS IAM Identity Center OpenID Connect (OIDC  API Reference)](https://docs.aws.amazon.com/singlesignon/latest/OIDCAPIReference/Welcome.html)
+- [Configuring IAM Identity Center authentication with the AWS CLI]()
+### Herramientas de desarrollo:
+- [OAuth 2.0 Debugger](https://oauthdebugger.com/)
+- [JSON Web Token (JWT) Debugger-Para inspeccionar tokens JWT](https://www.jwt.io/)
+
+## 📖 Conceptos relacionados
+- **OpenID Connect (OIDC)**: Extensión de OAuth 2.0 que AWS usa.
+- **PKCE (Proof Key for Code Exchange)**: Extensión de seguridad para OAuth.
+- **JWT (JSON Web Tokens)**: Formato común para tokens de acceso.
+- **Refresh Tokens**: Para obtener nuevos access tokens sin re-autorización
 
 ---
