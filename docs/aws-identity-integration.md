@@ -423,6 +423,7 @@
 
 ## ⚙️ Integración: SAML + OAuth + STS <a name="integracion"></a> 
 ### Arquitectura Híbrida
+- Diagrama
     ```bash
                     ┌─────────────────────────────────────┐
                     │        Identity Provider            │
