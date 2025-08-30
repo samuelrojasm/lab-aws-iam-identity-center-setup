@@ -3,7 +3,7 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
 ## Contenido
-- [¿Qué son los Permission Sets?](#que-es")
+- [¿Qué son los Permission Sets?](#que-es)
 - [Arquitectura: Permission Sets → IAM Roles](#arquitectura) 
 - [Naming Convention de IAM Roles](#name)
 - [Componentes de un Permission Set](#componentes)
@@ -11,7 +11,7 @@
 - [ Permission Sets comunes (ejemplos prácticos)](#ejemplos)
 - [Account Assignments](#account)
 - [Trust Relationships automáticas](#trust)
-- [Propagación y sincronización ](#"propagacion)
+- [Propagación y sincronización](#propagacion)
 - [Limitaciones importantes](#limitaciones)
 - [Terraform para Permission Sets](#terraform)
 - [Troubleshooting común](#troubleshooting)
@@ -45,8 +45,8 @@
     Role2 --> Acc1
     Role2 --> Acc2
     
-    User1[user@company.com] -.-> Assignment1[Assignment: DeveloperAccess → Acc1]
-    User2[admin@company.com] -.-> Assignment2[Assignment: ReadOnlyAccess → Acc2]
+    User1[user@company.com] -.-> Assignment1[Assignment: DeveloperAccess --> Acc1]
+    User2[admin@company.com] -.-> Assignment2[Assignment: ReadOnlyAccess --> Acc2]
     ```
 - Lo que pasa automáticamente:
     - Creas Permission Set → Identity Center lo almacena como template
@@ -71,10 +71,10 @@
     → IAM Role: "AWSReservedSSO_DatabaseAdmin_123456789abc"
     ```
 - Características del naming:
- - **Prefix fijo**: AWSReservedSSO_ (no se puede cambiar)
- - **Permission Set name**: Exactamente como lo nombras
- - **Random suffix**: 12 caracteres aleatorios únicos
- - **Inmutable**: No se puede renombrar una vez creado
+    - **Prefix fijo**: AWSReservedSSO_ (no se puede cambiar)
+    - **Permission Set name**: Exactamente como lo nombras
+    - **Random suffix**: 12 caracteres aleatorios únicos
+    - **Inmutable**: No se puede renombrar una vez creado
 
 ## ⚙️ Componentes de un Permission Set <a name="componentes"></a> 
 ### Estructura básica:
@@ -395,8 +395,9 @@
 
 ## ⚙️  Limitaciones importantes <a name="limitaciones"></a>
 - Límites de servicio:
-    |Recurso|Límite|Notas|Permission Sets por instancia|500|Soft limit, se puede aumentar|
-    |-------|------|------|----------------------------|---|-----------------------------|
+    |Recurso|Límite|Notas|
+    |-------|------|-----|
+    |Permission Sets por instancia|500|Soft limit, se puede aumentar|
     |Account Assignments|50,000|Por instancia|
     |Políticas inline por PS|1|Máximo 32KB de tamaño|
     Managed policies por PS|20|AWS + Customer managed|
@@ -458,7 +459,7 @@
     }
     ```
 
--Account assignment:
+- Account assignment:
     ```hcl
     resource "aws_ssoadmin_account_assignment" "developer_dev_account" {
         instance_arn       = local.sso_instance_arn
