@@ -7,7 +7,7 @@
 
 > 🚀 Laboratorio completo para configuración inicial de **AWS IAM Identity Center** desde cero. Incluye Terraform + pasos manuales, cheatsheets de referencia rápida y documentación técnica de conceptos fundamentales.
 
-## 🎯 Objetivos del MPV
+## 🎯 Objetivos del laboratorio
 ### Este laboratorio te permitirá:
 - Configurar AWS IAM Identity Center desde cero en una nueva organización de AWS.
 - Dominar tanto la automatización con Terraform como los pasos manuales necesarios.
