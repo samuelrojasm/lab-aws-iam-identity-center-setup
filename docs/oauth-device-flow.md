@@ -8,7 +8,7 @@
 - [¿Cómo funciona el Device Flow?](#diagrama)
 - [Ejemplo práctico: AWS CLI SSO Login](#ejemplo)
 - [Ventajas del Device Flow](#ventajas)
-- [Consideraciones de seguridad](#seguridad")
+- [Consideraciones de seguridad](#seguridad)
 - [Diferencias con otros OAuth flows](#diferencia)
 - [Troubleshooting común](#problemas)
 - [El problema de usar Authorization Code Flow en CLI](#problema)
@@ -16,7 +16,7 @@
 - [¿Cómo funciona en la práctica?: Escenario típico con AWS CLI](#practica)
 - [¿Por qué CLI es el caso de uso perfecto? ](#caso)
 - [Ejemplos de dispositivos con capacidades de entrada limitadas](#limitadas)
-- [ ¿Por qué Device Authorization Flow evita usar el navegador web en el dispositivo?](#navegador)
+- [¿Por qué Device Authorization Flow evita usar el navegador web en el dispositivo?](#navegador)
 
 ---
 
