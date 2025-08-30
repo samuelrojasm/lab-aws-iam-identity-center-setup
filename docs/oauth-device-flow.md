@@ -15,8 +15,6 @@
 - [](#)
 - [](#)
 
-## ⚙️ ¿Cómo funciona en la práctica?: Escenario típico con AWS CLI<a name="practica"></a> 
-
 ---
 
 ## ⚙️ ¿Qué es OAuth 2.0 Device Authorization Flow? <a name="que-es"></a> 
@@ -93,7 +91,7 @@
 > - Usuario decide qué dispositivo usar → Máxima flexibilidad
 
 ## ⚙️ ¿Cómo funciona en la práctica?: Escenario típico con AWS CLI<a name="practica"></a> 
-- El usuario autoriza en un dispositivo separado
+### El usuario autoriza en un dispositivo separado
     ```bash
     # En nuestra laptop/servidor (dispositivo limitado)
     $ aws sso login --profile my-profile
@@ -103,18 +101,18 @@
     Then enter the code: BCFG-HJKL
     Waiting for authorization to complete...
     ```
-- Lo que hacemos como usuarios
+### Lo que hacemos como usuarios
 1. En nuestro smartphone (dispositivo con capacidades completas):
     - Abrimos el link: https://device.sso.amazonaws.com/
     - Vemos una pantalla que dice "Enter device code"
     - Escribimos: BCFG-HJKL
     - Nos loggeamos con  usuario/password normal
-    - Confirmar: "¿Autorizar AWS CLI en tu laptop?"
+    - Confirmar: "¿Autorizar AWS CLI en nuestra laptop?"
 2. De vuelta en nuestra laptop:
     - CLI detecta que autorizaste
     - Descarga los tokens automáticamente
     - Ya podemos usar comandos AWS
-- Ventajas de esta separación:
+### Ventajas de separ dispositivos (capacidades completas/capacidades limitadas):
     - Comodidad:
         - Usas tu teléfono (teclado táctil, autocompletado, biometrics)
         - No tienes que escribir passwords complejos en terminal
@@ -133,14 +131,14 @@
 ## ⚙️ ¿Por qué CLI es el caso de uso perfecto? <a name="caso"></a> 
 ### Especialmente útil para aplicaciones de línea de comandos
 - Antes del Device Flow
-    1.- Access Keys hardcodeados:
+    - Access Keys hardcodeados:
         ```bash
         export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
         export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
         ```
         > [!CAUTION]
         > **Problemas:** Keys permanentes, riesgo si se comprometen, difíciles de rotar
-    2.- Profiles con credenciales:
+    - Profiles con credenciales:
         ```bash
         [default]
         aws_access_key_id = AKIAIOSFODNN7EXAMPLE  
@@ -155,7 +153,7 @@
     # Renovación transparente
     # Sin credenciales permanentes almacenadas
     ```
-- Comparación práctica:
+### Comparación práctica:
 
 |Método|Seguridad|Comodidad|Mantenimiento|
 |------|---------|---------|-------------|
@@ -163,11 +161,11 @@
 |IAM Roles|✅ Temporales|❌ Complejo setup|❌ Configuración compleja|
 |Device Flow|✅ Temporales|✅ Simple UX|✅ Automático|
 
-- Otros ejemplos de CLI que usan Device Flow:
-    - GitHub CLI: `gh auth login`
-    - Azure CLI: `az login --use-device-code`
-    - Google Cloud CLI: `gcloud auth login --no-launch-browser`
-    - Docker CLI: Para acceder a registries privados
+### Otros ejemplos de CLI que usan Device Flow:
+- GitHub CLI: `gh auth login`
+- Azure CLI: `az login --use-device-code`
+- Google Cloud CLI: `gcloud auth login --no-launch-browser`
+ - Docker CLI: Para acceder a registries privados
 
 ## ⚙️ Ejemplos de dispositivos con capacidades de entrada limitadas <a name="limitadas"></a> 
 ### Smart TVs:
