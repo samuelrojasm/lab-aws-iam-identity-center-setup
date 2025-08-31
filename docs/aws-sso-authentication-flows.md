@@ -245,13 +245,18 @@
     Futuras llamadas AWS usan estas credenciales automáticamente
     Cuando expiren, CLI usa refresh_token para renovar sin re-autenticar
     ``
-### El Punto Clave: SAML Siempre Está Presente**
+### El Punto Clave: SAML siempre está presente
 - **La revelación importante**: Incluso en el flujo OAuth Device, SAML sigue siendo usado para la autenticación real del usuario. OAuth Device Flow es simplemente el mecanismo de autorización del dispositivo, pero la autenticación del usuario sigue siendo SAML.
     ```bash
     Flujo Web:     Usuario → SAML → STS
     Flujo Device:  Usuario → OAuth Device → [SAML en el navegador] → OAuth Tokens → STS
     ```
 - **Por eso funciona tan bien**: El IdP no necesita saber si el usuario viene de una web app o de un CLI tool. Siempre usa SAML para autenticar, y AWS SSO se encarga de "traducir" esa autenticación al formato que necesita cada cliente (SAML assertion directa vs OAuth tokens).
+
+> [!IMPORTANT]
+> **SAML nunca desaparece** - siempre es el mecanismo de autenticación real. OAuth Device Flow solo resuelve el problema de "¿cómo autorizo un dispositivo sin navegador?" pero la autenticación del usuario sigue siendo SAML<br>
+> Esto explica por qué ambos flujos pueden usar el mismo IdP y las mismas políticas de seguridad - porque al final del día, ambos dependen de SAML para la autenticación real del usuario.
+
 
 ### ¿Por Qué este proceso es tan complejo?
 - La complejidad existe por buenas razones de seguridad:
