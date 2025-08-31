@@ -166,6 +166,20 @@
     🏢 IdP muestra login → María ingresa credenciales
     IdP valida → "Sí, es María del departamento Marketing"
     ```
+- Paso 4: SAML Assertion de Vuelta
+    ```bash
+    🏢 IdP → AWS SSO: Envía SAML Assertion firmada
+    Assertion contiene:
+        - Subject: maria.lopez@empresa.com  
+        - Attributes: Department=Marketing, Groups=Marketing-ReadOnly
+        - Signature: Certificado del IdP
+    ```
+- Paso 5: STS con SAML
+    🌐 AWS SSO → STS: AssumeRoleWithSAML
+        - saml_assertion: [la assertion del IdP]
+        - role_arn: "arn:aws:iam::123456789012:role/AWSReservedSSO_Marketing-ReadOnly_xyz"
+
+    🔐 STS valida assertion → verifica Trust Policy → genera credenciales
 
 
 
