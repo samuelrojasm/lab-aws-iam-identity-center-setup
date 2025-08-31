@@ -150,6 +150,26 @@
         - Y que el email termine en "@empresa.com"
 
 ## ⚙️ La Danza Completa: `aws sso login --profile` <a name="danza"></a>
+### Flujo A: Usuario Web (SAML) - María accede desde el navegador
+- Paso 1: Acceso Directo a AWS Console
+    ```bash
+    👤 María → https://mi-empresa.awsapps.com/start
+    AWS SSO: "No tienes sesión activa, te redirijo al IdP"
+    ```
+- Paso 2: Redirección SAML al IdP
+    ```bash
+    🌐 AWS SSO → IdP: Envía SAML AuthnRequest
+    "Por favor autentica a este usuario para AWS"
+    ```
+- Paso 3: Autenticación en el IdP
+    ```bash
+    🏢 IdP muestra login → María ingresa credenciales
+    IdP valida → "Sí, es María del departamento Marketing"
+    ```
+
+
+
+---
 ### ¿Qué sucede cuando ejecutas este comando?
 - Vamos paso a paso por todo el proceso:
 - Paso 1: CLI Descubre la Configuración
