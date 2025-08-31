@@ -175,69 +175,85 @@
         - Signature: Certificado del IdP
     ```
 - Paso 5: STS con SAML
+    ```bash
     🌐 AWS SSO → STS: AssumeRoleWithSAML
         - saml_assertion: [la assertion del IdP]
         - role_arn: "arn:aws:iam::123456789012:role/AWSReservedSSO_Marketing-ReadOnly_xyz"
 
     🔐 STS valida assertion → verifica Trust Policy → genera credenciales
-
-
-
----
-### ¿Qué sucede cuando ejecutas este comando?
-- Vamos paso a paso por todo el proceso:
-- Paso 1: CLI Descubre la Configuración
+    ```
+- Paso 6: Acceso a AWS Console
     ```bash
-    El CLI lee ~/.aws/config:
-    [profile dev-account]
-    sso_start_url = https://mi-empresa.awsapps.com/start
-    sso_region = us-east-1
-    sso_account_id = 123456789012
-    sso_role_name = DeveloperAccess
+    ✅ María ve el portal AWS SSO con sus cuentas disponibles
+    Selecciona cuenta → obtiene credenciales temporales → accede a AWS Console
+    ```
+
+### Flujo B: Usuario CLI (OAuth Device Flow) - Carlos usa `aws sso login --profile`
+- Paso 1: CLI Descubre la configuración
+    ```bash
+    💻 El CLI lee ~/.aws/config:
+        [profile dev-account]
+        sso_start_url = https://mi-empresa.awsapps.com/start
+        sso_region = us-east-1
+        sso_account_id = 123456789012
+        sso_role_name = DeveloperAccess
     ```
 - Paso 2: Inicia Device Authorization Flow
     ```bash
-    CLI → AWS SSO: "Necesito autorizar este device para el perfil dev-account"
-    AWS SSO → CLI: {
+    💻 CLI → AWS SSO: "Necesito autorizar este device para el perfil dev-account"
+    🌐 AWS SSO → CLI: {
         "device_code": "secreto-que-solo-el-cli-conoce",
         "user_code": "WXYZ-1234", 
         "verification_uri": "https://device.sso.aws.com"
     }
     ```
-- Paso 3: Usuario completa Autenticación Web
+- Paso 3: Aqupi entra SAML - Usuario autoriza en navegador
     ```bash
-    CLI muestra: "Ve a https://device.sso.aws.com e ingresa: WXYZ-1234"
-    Usuario en navegador → AWS SSO → IdP (flujo SAML completo)
-    IdP valida usuario → AWS SSO confirma identidad
-    AWS SSO asocia device_code con la identidad del usuario
+    💻 CLI muestra: "Ve a https://device.sso.aws.com e ingresa: WXYZ-1234"
+
+    👤 Carlos abre navegador → ingresa código WXYZ-1234
+    🌐 AWS SSO: "¿Quién eres? Te redirijo al IdP"
+    🏢 IdP ejecuta mismo flujo SAML que María:
+        - Carlos se autentica
+        - IdP genera SAML Assertion  
+        - AWS SSO recibe y valida assertion
+        - AWS SSO asocia device_code con identity de Carlos
     ```
-- Paso 4: CLI obtiene Tokens OAuth
+- Paso 4: CLI Obtiene Tokens OAuth
     ```bash
-    CLI (polling cada 5 segundos): "¿Ya terminó la autorización?"
-    AWS SSO: "Sí, aquí están tus tokens OAuth"
-    CLI recibe: access_token, id_token, refresh_token
+    💻 CLI (polling cada 5 segundos): "¿Ya terminó la autorización?"
+    🌐 AWS SSO: "Sí, Carlos se autenticó vía SAML, aquí están tus tokens OAuth"
+    💻 CLI recibe: access_token, id_token, refresh_token
     ```
-- Paso 5: Conversión a credenciales AWS
+- Paso 5: Conversión a Credenciales AWS
     ```bash
-    CLI → STS AssumeRoleWithWebIdentity:
-        - web_identity_token: [el id_token de OAuth]
+    💻 CLI → STS: AssumeRoleWithWebIdentity
+        - web_identity_token: [el id_token de OAuth que contiene info de Carlos]
         - role_arn: "arn:aws:iam::123456789012:role/AWSReservedSSO_DeveloperAccess_xyz"
 
-    STS valida token → verifica Trust Policy → genera credenciales temporales
-    STS → CLI: {
-        "AccessKeyId": "ASIA...",
-        "SecretAccessKey": "...",
-        "SessionToken": "...",
-        "Expiration": "2025-08-30T13:00:00Z"
-    }
+    🔐 STS valida token → verifica Trust Policy → genera credenciales temporales
+        STS → CLI: {
+            "AccessKeyId": "ASIA...",
+            "SecretAccessKey": "...",
+            "SessionToken": "...",
+            "Expiration": "2025-08-30T13:00:00Z"
+        }
     ```
-- Paso 6: CLI guarda y sa credenciales
+- Paso 6: CLI guarda y usa credenciales
     ```bash
-    CLI guarda en ~/.aws/cli/cache/
+    💻 CLI guarda en ~/.aws/cli/cache/
     Futuras llamadas AWS usan estas credenciales automáticamente
     Cuando expiren, CLI usa refresh_token para renovar sin re-autenticar
+    ``
+### El Punto Clave: SAML Siempre Está Presente**
+- **La revelación importante**: Incluso en el flujo OAuth Device, SAML sigue siendo usado para la autenticación real del usuario. OAuth Device Flow es simplemente el mecanismo de autorización del dispositivo, pero la autenticación del usuario sigue siendo SAML.
+    ```bash
+    Flujo Web:     Usuario → SAML → STS
+    Flujo Device:  Usuario → OAuth Device → [SAML en el navegador] → OAuth Tokens → STS
     ```
-### ¿Por qué este proceso es tan complejo?
+- **Por eso funciona tan bien**: El IdP no necesita saber si el usuario viene de una web app o de un CLI tool. Siempre usa SAML para autenticar, y AWS SSO se encarga de "traducir" esa autenticación al formato que necesita cada cliente (SAML assertion directa vs OAuth tokens).
+
+### ¿Por Qué este proceso es tan complejo?
 - La complejidad existe por buenas razones de seguridad:
     - **Separación de contextos**: CLI no maneja credenciales del usuario directamente
     - **Tokens temporales**: Las credenciales expiran automáticamente
