@@ -34,10 +34,10 @@
     - ✅ utoriza acceso a recursos específicos (scopes)
     - ✅ Proporciona mecanismo para dispositivos sin navegador
 - Lo que NO hace OAuth Device Flow:
-    ❌ NO autentica al usuario (no verifica credenciales)
-    ❌ NO valida password
-    ❌ NO conoce la identidad del usuario
-    ❌ NO accede a directorio de usuarios
+    - ❌ NO autentica al usuario (no verifica credenciales)
+    - ❌ NO valida password
+    - ❌ NO conoce la identidad del usuario
+    - ❌ NO accede a directorio de usuarios
 - El flujo real separado:
     ```bash
     1. AUTORIZACIÓN DEL DISPOSITIVO (OAuth Device Flow):
@@ -56,6 +56,7 @@
 - Tabla comparativa
 
 |Aspecto|OAuth Device Flow|SAML|
+|-------|-----------------|----|
 |Propósito|Autorizar dispositivo|Autenticar usuario|
 |Pregunta que responde"|¿Puede este CLI actuar por alguien?"|"¿Quién es este usuario?"|
 |Input|Device code, client ID|Credenciales de usuario|
@@ -100,7 +101,6 @@
         - Autoriza la delegación de permisos
     - PERO NO hace autenticación del usuario - eso siempre lo hace SAML.
 
-PERO NO hace autenticación del usuario - eso siempre lo hace SAML.
 > [!NOTE]
 > **OAuth Device Flow es "ciego" a la identidad, solo dice:**<br>
 > - Autorizo que ALGUIEN use este dispositivo"<br>
