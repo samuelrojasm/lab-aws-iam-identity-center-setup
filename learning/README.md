@@ -369,21 +369,22 @@
 - NO, AWS STS NO es parte de AWS Identity Center.
 - Son servicios separados que trabajan juntos.
 #### La Arquitectura Real:
-
-┌─────────────────────────────────────────────────────┐
-│                AWS Account                          │
-│                                                     │
-│  ┌─────────────────────┐    ┌─────────────────────┐ │
-│  │  AWS Identity       │    │     AWS STS         │ │
-│  │  Center             │    │  (Security Token    │ │
-│  │  (SSO Service)      │    │   Service)          │ │
-│  │                     │    │                     │ │
-│  │ • SAML/OAuth        │───▶│ • AssumeRole*       │ │
-│  │ • User Portal       │    │ • Token Generation  │ │
-│  │ • Identity Sources  │    │ • Credential Mgmt   │ │
-│  └─────────────────────┘    └─────────────────────┘ │
-│                                                     │
-└─────────────────────────────────────────────────────┘
+    ```bash
+    ┌─────────────────────────────────────────────────────┐
+    │                AWS Account                          │
+    │                                                     │
+    │  ┌─────────────────────┐    ┌─────────────────────┐ │
+    │  │  AWS Identity       │    │     AWS STS         │ │
+    │  │  Center             │    │  (Security Token    │ │
+    │  │  (SSO Service)      │    │   Service)          │ │
+    │  │                     │    │                     │ │
+    │  │ • SAML/OAuth        │───▶│ • AssumeRole*       │ │
+    │  │ • User Portal       │    │ • Token Generation  │ │
+    │  │ • Identity Sources  │    │ • Credential Mgmt   │ │
+    │  └─────────────────────┘    └─────────────────────┘ │
+    │                                                     │
+    └─────────────────────────────────────────────────────┘
+    ```
 
 #### ¿Cuál es la diferencia?
 - AWS Identity Center:
