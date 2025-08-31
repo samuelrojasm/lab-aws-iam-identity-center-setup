@@ -12,10 +12,6 @@
 - [¿En que casos STS recibe de SAML o de OAuth?](#local-04)
 - [¿AWS STL es parte de AWS Identity Center?](#local-05)
 - [¿Dónde SÍ se usa OIDC con AWS?](#local-06)
-- [](#local-07)
-- [](#local-08)
-- [](#local-09)
-- [](#local-10)
 
 ---
 
