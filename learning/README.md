@@ -10,8 +10,12 @@
 - [¿OAuth Device Flow hace autentificación o autorización?](#local-02)
 - [¿AWS STS hace autentificación o autorización? ](#local-03)
 - [¿En que casos STS recibe de SAML o de OAuth?](#local-04)
-- [Texto 02](#local-05)
-- [Texto 02](#local-06)
+- [¿AWS STL es parte de AWS Identity Center?](#local-05)
+- [](#local-06)
+- [](#local-06)
+- [](#local-06)
+- [](#local-06)
+- [](#local-06)
 
 ---
 
@@ -361,11 +365,128 @@
 
 ---
 
-### ⚡ ¿AWS STL es parte de AWS Identity Center?` <a name="local-05"></a>
+### ⚡ ¿AWS STL es parte de AWS Identity Center? <a name="local-05"></a>
 - NO, AWS STS NO es parte de AWS Identity Center.
 - Son servicios separados que trabajan juntos.
-#### 
+#### La Arquitectura Real:
+┌─────────────────────────────────────────────────────┐
+│                AWS Account                          │
+│                                                     │
+│  ┌─────────────────────┐    ┌─────────────────────┐ │
+│  │  AWS Identity       │    │     AWS STS         │ │
+│  │  Center             │    │  (Security Token    │ │
+│  │  (SSO Service)      │    │   Service)          │ │
+│  │                     │    │                     │ │
+│  │ • SAML/OAuth        │───▶│ • AssumeRole*       │ │
+│  │ • User Portal       │    │ • Token Generation  │ │
+│  │ • Identity Sources  │    │ • Credential Mgmt   │ │
+│  └─────────────────────┘    └─────────────────────┘ │
+│                                                     │
+└─────────────────────────────────────────────────────┘
 
+#### ¿Cuál es la diferencia?
+- AWS Identity Center:
+    - 🎯 **Propósito**: Gestión centralizada de identidades y SSO
+    - 📍 **Alcance**: Una instancia por organización
+    - 🔧 **Funciones**:
+        - Portal de usuario (donde ves las cuentas)
+        - Gestión de usuarios y grupos
+        - Configuración de Identity Providers
+        - Permission Sets
+        - Mapeo de atributos SAML/OAuth
+- AWS STS:
+    -  🎯 **Propósito**:** Emisión de credenciales temporales
+    - 📍 **Alcance**: Servicio global de AWS, existe en cada cuenta
+    - 🔧 **Funciones**:
+        - `AssumeRole`, `AssumeRoleWithSAML`, `AssumeRoleWithWebIdentity`
+        - Validación de tokens y assertions
+        - Generación de credenciales temporales
+        - Aplicación de trust policies
+#### ¿Cómo Interactúan?
+- El Flujo Completo:
+    ```bash
+    1. 🏢 IdP autentica usuario → SAML assertion
+    2. 🌐 AWS Identity Center recibe SAML → procesa y mapea
+    3. 🌐 AWS Identity Center → llama a AWS STS
+    4. 🔐 AWS STS valida y emite credenciales temporales
+    5. ✅ Usuario obtiene acceso temporal a AWS
+    ```
+- En código (conceptual):
+    ```python
+    # Lo que hace AWS Identity Center internamente:
+    def handle_saml_login(saml_assertion):
+        # Identity Center procesa la assertion
+        user_info = parse_saml_attributes(saml_assertion)
+        role_arn = map_user_to_role(user_info)
+        
+        # Identity Center llama a STS
+        sts_client = boto3.client('sts')
+        credentials = sts_client.assume_role_with_saml(
+            RoleArn=role_arn,
+            PrincipalArn=saml_provider_arn,
+            SAMLAssertion=saml_assertion
+        )
+    return credentials
+    ```
+#### Comparación detallada:
+
+|Aspecto|AWS Identity Center|AWS STS|
+|-------|-------------------|-------|
+|Tipo de servicio|Gestión de identidades|Emisión de tokens|
+|Interfaz de usuario|Sí (portal web)|No (solo APIs)|
+|Gestión de usuarios|Sí|No|
+|Configuración IdP|Sí|No|
+|Emite credenciales|No directamente|Sí|
+|Scope|Multi-account|Por cuenta|
+|Costos|Gratis hasta 50 usuarios|Incluido en AWS|
+
+#### ¿Por qué la Confusión?
+- Razones comunes:
+    - **Integración estrecha**: Trabajan tan juntos que parecen uno
+    - **UI unificada**: El portal de Identity Center oculta las llamadas a STS
+    - **Documentación**: A veces se mencionan juntos
+    - **Experiencia del usuario**: El usuario no ve la diferencia
+#### Analogía del Aeropuerto
+- AWS Identity Center = Check-in counter
+    - Verifica tu identidad
+    - Te asigna asiento (mapea permisos)
+    - Te da boarding pass (información de acceso)
+- AWS STS = Security Checkpoint
+    - Valida tu boarding pass
+    - Te da acceso temporal al área segura
+    - Emite "pase temporal" para volar
+> Son diferentes departamentos, pero trabajas con ambos para volar.
+#### En la práctica:
+- Lo que haces en Identity Center:
+    - Configurar usuarios y grupos
+    - Mapear atributos SAML
+    - Crear Permission Sets
+    - Asignar acceso a cuentas
+- Lo que STS hace automáticamente:
+    - Validar tokens/assertions
+    - Aplicar trust policies
+    - Generar credenciales AWS temporales
+    - Manejar expiración de tokens
+#### ¿Puedes usar STS sin Identity Center?
+- ¡SÍ! STS existe independientemente:
+    ```bash
+    # STS directo (sin Identity Center)
+    aws sts assume-role \
+        --role-arn arn:aws:iam::123456789012:role/MyRole \
+        --role-session-name my-session
+
+    # Cross-account access directo
+    aws sts assume-role \
+        --role-arn arn:aws:iam::999999999999:role/CrossAccountRole \
+        --role-session-name cross-account-session
+    ```
+#### Resumen
+- AWS STS es un servicio INDEPENDIENTE que AWS Identity Center UTILIZA.
+    - **Identity Center**: El "orquestador" de identidades
+    - **STS**: El "emisor" de credenciales temporales
+- **Analogía**: Identity Center es como tu banco, STS es como el cajero automático. El banco gestiona tu cuenta, pero el cajero emite el efectivo.
+
+---
 
 ### ⚡ Texto 01 `ss` <a name="local-01"></a>
 - Texto01
