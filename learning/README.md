@@ -369,6 +369,7 @@
 - NO, AWS STS NO es parte de AWS Identity Center.
 - Son servicios separados que trabajan juntos.
 #### La Arquitectura Real:
+
 ┌─────────────────────────────────────────────────────┐
 │                AWS Account                          │
 │                                                     │
