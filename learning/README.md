@@ -11,7 +11,7 @@
 - [¿AWS STS hace autentificación o autorización? ](#local-03)
 - [¿En que casos STS recibe de SAML o de OAuth?](#local-04)
 - [¿AWS STL es parte de AWS Identity Center?](#local-05)
-- [¿Cúal es el flujo de Identity Center con OpenID Connect (OIDC)?](#local-06)
+- [¿Dónde SÍ se usa OIDC con AWS?](#local-06)
 - [](#local-07)
 - [](#local-08)
 - [](#local-09)
@@ -490,255 +490,37 @@
 
 ---
 
-### ⚡ ¿Cúal es el flujo de Identity Center con OpenID Connect (OIDC)? <a name="local-06"></a>
-- El flujo de Identity Center con OpenID Connect (OIDC) es muy similar al OAuth Device Flow, pero con algunas diferencias importantes.
-#### Identity Center puede usar OIDC de dos maneras:
-1. Como Identity Source (reemplaza SAML)
-2. Para aplicaciones cliente (como el CLI)
-#### Flujo 1: OIDC como Identity Source (Reemplazo de SAML)
-- Configuración:
-
-    Identity Provider (Okta, Auth0, Azure AD con OIDC)
-                    ↓ 
-            AWS Identity Center
-                    ↓
-                 AWS STS
-
-- El Flujo Paso a Paso:
-    - Usuario Accede al Portal
-        ```bash
-        👤 Usuario → https://empresa.awsapps.com/start
-        🌐 Identity Center: "No tienes sesión, necesitas autenticarte"
-        ```
-    - Redirección OIDC (No SAML)
-        ```bash
-        🌐 Identity Center → OIDC Provider (Authorization Endpoint)
-        URL: https://auth.empresa.com/oauth2/authorize?
-            client_id=aws-identity-center&
-            response_type=code&
-            scope=openid profile email groups&
-            redirect_uri=https://empresa.awsapps.com/oidc/callback&
-            state=random-state-value
-        ```
-    -  Usuario se autentica
-        ```bash
-        🏢 OIDC Provider muestra login
-        👤 Usuario ingresa credenciales
-        🏢 OIDC Provider valida credenciales
-        ```
-    - Authorization Code Return
-        ```bash
-        🏢 OIDC Provider → Identity Center (redirect):
-        https://empresa.awsapps.com/oidc/callback?
-            code=AUTH_CODE_123&
-            state=random-state-value
-        ```
-    - Token Exchange
-        ```bash
-        🌐 Identity Center → OIDC Provider (Token Endpoint):
-        POST /oauth2/token
-        {
-            "grant_type": "authorization_code",
-            "code": "AUTH_CODE_123",
-            "client_id": "aws-identity-center",
-            "client_secret": "secret",
-            "redirect_uri": "https://empresa.awsapps.com/oidc/callback"
-        }
-
-        🏢 OIDC Provider responde:
-        {
-            "access_token": "AT_xyz789",
-            "id_token": "ID_TOKEN_jwt",  ← Este es clave
-            "token_type": "Bearer",
-            "expires_in": 3600
-        }
-        ```
-    - Extracción de Claims del ID Token
-        ```bash
-        🌐 Identity Center decodifica ID Token (JWT):
-        {
-            "sub": "12345",
-            "email": "juan.perez@empresa.com",
-            "name": "Juan Pérez",
-            "groups": ["developers", "aws-admin"],
-            "department": "engineering",
-            "iss": "https://auth.empresa.com",
-            "aud": "aws-identity-center"
-        }
-        ```
-    - STS con Web Identity
-        ```bash
-        🌐 Identity Center → AWS STS:
-        AssumeRoleWithWebIdentity(
-            RoleArn="arn:aws:iam::123456789012:role/IdentityCenterRole",
-            WebIdentityToken=ID_TOKEN_jwt,
-            RoleSessionName="juan.perez-session"
-        )
-
-        🔐 STS valida JWT y emite credenciales AWS
-        ```
-#### Flujo 2: CLI con OIDC (aws sso login --profile)
-- Cuando Identity Center usa OIDC como source:
-1. CLI Inicia Device Flow
-    ```bash
-    💻 aws sso login --profile dev
-    🌐 Identity Center responde con device code (igual que antes)
+### ⚡ ¿Dónde SÍ se usa OIDC con AWS? <a name="local-06"></a>
+1. Aplicaciones que usan AWS STS directamente:
+    ```python
+    # Tu app custom se conecta directamente a un OIDC provider
+    # Luego usa el ID token con STS (sin Identity Center)
+    sts_client.assume_role_with_web_identity(
+        RoleArn='arn:aws:iam::123456789012:role/MyOIDCRole',
+        WebIdentityToken=id_token_from_auth0,  # Direct OIDC
+        RoleSessionName='my-session'
+    )
     ```
-2. Usuario Autoriza en Navegador
-     ```bash
-    👤 Usuario va a https://device.sso.aws.com → código: ABCD-1234
-    🌐 Identity Center: "Necesito autenticar este usuario"
+2. GitHub Actions, GitLab CI, etc
+    ```yaml
+    # GitHub Actions usando OIDC con AWS
+    - name: Configure AWS credentials
+    uses: aws-actions/configure-aws-credentials@v2
+    with:
+        role-to-assume: arn:aws:iam::123456789012:role/GitHubRole
+        web-identity-token-file: ${{ env.AWS_WEB_IDENTITY_TOKEN_FILE }}
     ```
-3. OIDC Flow en el Navegador
-    ```bash
-    🌐 Identity Center → OIDC Provider (Authorization Code Flow)
-    🏢 OIDC Provider autentica usuario
-    🏢 OIDC Provider → Identity Center: ID Token con claims
+3. EKS con Service Accounts:
+    ```yaml
+    # Pod usando IRSA (IAM Roles for Service Accounts) con OIDC
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+        name: my-service-account
+        annotations:
+            eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/MyPodRole
     ```
-4. Device Authorization Complete
-    ```bash
-    🌐 Identity Center asocia device_code con identity del usuario
-    💻 CLI obtiene OAuth tokens de Identity Center (no del OIDC provider)
-    ```
-5. CLI usa Tokens con STS
-    ```bash
-    💻 CLI → AWS STS: AssumeRoleWithWebIdentity
-    (Usando tokens de Identity Center, no del OIDC provider original)
-    ```
-#### Diferencias: SAML vs OIDC en Identity Center
-|Aspecto|SAM|OIDC|
-|-------|---|----|
-|Protocolo base|XML, HTTP POST/Redirect|JSON, HTTP REST|
-|Token format|XML Assertion|JWT (JSON Web Token)|
-|Flow típico|POST/Redirect binding|Authorization Code Flow|
-|Información de usuario|SAML Attributes|JWT Claims|
-|Complejidad|Media (XML parsing)|Baja (JSON)|
-|Estándar moderno|Maduro pero legacy|Moderno y preferido|
-
-#### Configuración OIDC en Identity Center
-- Trust Policy para OIDC Provider:
-    ```json
-    {
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Effect": "Allow",
-                "Principal": {
-                    "Federated": "arn:aws:iam::123456789012:oidc-provider/auth.empresa.com"
-                },
-                "Action": "sts:AssumeRoleWithWebIdentity",
-                "Condition": {
-                    "StringEquals": {
-                        "auth.empresa.com:aud": "aws-identity-center",
-                        "auth.empresa.com:sub": "validated-subject"
-                    },
-                    "StringLike": {
-                        "auth.empresa.com:email": "*@empresa.com"
-                    }
-                }
-            }
-        ]
-    }
-    ```
-- Attribute Mapping (OIDC Claims → Identity Center):
-    ```json
-    {
-        "mappings": {
-            "email": "${path:email}",
-            "firstName": "${path:given_name}",
-            "lastName": "${path:family_name}",
-            "displayName": "${path:name}",
-            "groups": "${path:groups}",
-            "department": "${path:department}"
-        }
-    }
-    ```
-#### ¿Cuándo usar OIDC vs SAML?
-- Usar OIDC cuando:
-    - **Aplicaciones modernas**: APIs, SPAs, mobile apps
-    - **Simplicidad**: Menos complejidad de configuración
-    - **JWT tokens**: Mejor para APIs y servicios
-    - **Cloud-native IdPs** Auth0, Okta modern, Cognito
-    - **Microservicios**: Better token introspection
-
-- Usar SAML cuando:
-    - **Enterprise legacy**: Sistemas tradicionales
-    - **Rich attributes**: Necesitas muchos atributos complejos
-    - **Compliance**: Estándares enterprise establecidos
-    - **Active Directory**: ADFS y sistemas Microsoft legacy
-    - **Complex claims**: Conditional logic en assertions
-#### JWT vs SAML Assertion - Ejemplo:
-- SAML Assertion (XML):
-    ```xml
-    <saml:AttributeStatement>
-        <saml:Attribute Name="email">
-            <saml:AttributeValue>juan.perez@empresa.com</saml:AttributeValue>
-        </saml:Attribute>
-        <saml:Attribute Name="groups">
-            <saml:AttributeValue>developers</saml:AttributeValue>
-            <saml:AttributeValue>aws-admin</saml:AttributeValue>
-        </saml:Attribute>
-    </saml:AttributeStatement>
-    ```
-- OIDC ID Token (JWT payload):
-    ```json
-    {
-        "sub": "12345",
-        "email": "juan.perez@empresa.com",
-        "groups": ["developers", "aws-admin"],
-        "iss": "https://auth.empresa.com",
-        "aud": "aws-identity-center",
-        "exp": 1640995200,
-        "iat": 1640991600
-    }
-    ```
-#### Ventajas de OIDC en Identity Center
-1. Simplicidad:
-    ```bash
-    SAML: XML parsing, certificate validation, complex bindings
-    OIDC: JSON parsing, JWT validation, simple HTTP REST
-    ```
-2. Performance:
-    ```bash
-    SAML: Larger XML payloads, POST forms
-    OIDC: Compact JWT tokens, REST APIs
-    ```
-3. Developer Experience:
-    ```bash
-    SAML: Need specialized libraries
-    OIDC: Standard HTTP + JWT libraries
-    ```
-4. Modern Standards:
-    ```bash
-    SAML: 2005 standard, XML-based
-    OIDC: 2014 standard, built on OAuth 2.0
-    ```
-#### Resumen
-- El flujo OIDC en Identity Center es prácticamente idéntico al SAML, pero:
-    - En lugar de SAML Assertions → usa JWT ID Tokens
-    - En lugar de XML/POST → usa JSON/REST
-    - Mismo resultado final: Credenciales AWS temporales vía STS
-
-> La experiencia del usuario es la misma, pero la implementación técnica es más moderna y simple.
-
----
-
-### ⚡ Texto 01 `ss` <a name="local-01"></a>
-- Texto01
-- Texto02
-
-> [!NOTE]
-> Internamente, `act` crea contenedores **Docker** que simulan<br>
-> los **GitHub runners**, por lo que necesitas tener Docker instalado.
-
-#### 🔗 Referencias Texto 01
-- []()
-
 ---
 
 
-----
-
-
----
 
