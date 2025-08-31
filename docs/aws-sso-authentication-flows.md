@@ -254,8 +254,8 @@
 - **Por eso funciona tan bien**: El IdP no necesita saber si el usuario viene de una web app o de un CLI tool. Siempre usa SAML para autenticar, y AWS SSO se encarga de "traducir" esa autenticación al formato que necesita cada cliente (SAML assertion directa vs OAuth tokens).
 
 > [!IMPORTANT]
-> **SAML nunca desaparece** - siempre es el mecanismo de autenticación real. OAuth Device Flow solo resuelve el problema de "¿cómo autorizo un dispositivo sin navegador?" pero la autenticación del usuario sigue siendo SAML<br>
-> Esto explica por qué ambos flujos pueden usar el mismo IdP y las mismas políticas de seguridad - porque al final del día, ambos dependen de SAML para la autenticación real del usuario.
+> - **SAML nunca desaparece** - siempre es el mecanismo de autenticación real. OAuth Device Flow solo resuelve el problema de "¿cómo autorizo un dispositivo sin navegador?" pero la autenticación del usuario sigue siendo SAML<br>
+> - Esto explica por qué ambos flujos pueden usar el mismo IdP y las mismas políticas de seguridad - porque al final del día, ambos dependen de SAML para la autenticación real del usuario.
 
 
 ### ¿Por Qué este proceso es tan complejo?
