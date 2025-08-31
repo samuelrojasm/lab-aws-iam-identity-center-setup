@@ -680,9 +680,46 @@
         </saml:Attribute>
     </saml:AttributeStatement>
     ```
+- OIDC ID Token (JWT payload):
+    ```json
+    {
+        "sub": "12345",
+        "email": "juan.perez@empresa.com",
+        "groups": ["developers", "aws-admin"],
+        "iss": "https://auth.empresa.com",
+        "aud": "aws-identity-center",
+        "exp": 1640995200,
+        "iat": 1640991600
+    }
+    ```
+#### Ventajas de OIDC en Identity Center
+1. Simplicidad:
+    ```bash
+    SAML: XML parsing, certificate validation, complex bindings
+    OIDC: JSON parsing, JWT validation, simple HTTP REST
+    ```
+2. Performance:
+    ```bash
+    SAML: Larger XML payloads, POST forms
+    OIDC: Compact JWT tokens, REST APIs
+    ```
+3. Developer Experience:
+    ```bash
+    SAML: Need specialized libraries
+    OIDC: Standard HTTP + JWT libraries
+    ```
+4. Modern Standards:
+    ```bash
+    SAML: 2005 standard, XML-based
+    OIDC: 2014 standard, built on OAuth 2.0
+    ```
+#### Resumen
+- El flujo OIDC en Identity Center es prácticamente idéntico al SAML, pero:
+    - En lugar de SAML Assertions → usa JWT ID Tokens
+    - En lugar de XML/POST → usa JSON/REST
+    - Mismo resultado final: Credenciales AWS temporales vía STS
 
-
-
+> La experiencia del usuario es la misma, pero la implementación técnica es más moderna y simple.
 
 ---
 
